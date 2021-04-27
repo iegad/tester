@@ -1,0 +1,8 @@
+Logs
+*.meta
+Library
+obj
+Packages
+ProjectSettings
+Temp
+*.asset
