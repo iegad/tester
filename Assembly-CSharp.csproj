@@ -60,6 +60,8 @@
     <Compile Include="Assets\Scripts\Network\TcpClient.cs" />
     <Compile Include="Assets\Scripts\Protocol\Cerberus.cs" />
     <Compile Include="Assets\Scripts\Protocol\Package.cs" />
+    <Compile Include="Assets\Scripts\Utils\JobQue.cs" />
+    <Compile Include="Assets\Scripts\Network\Endian.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

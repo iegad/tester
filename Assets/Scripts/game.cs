@@ -1,15 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using kraken;
+using Assets.Scripts.Network;
 using Base;
 using Google.Protobuf;
 using System.Text;
+using System;
 
 public class game : MonoBehaviour
 {
     public string Address;
     public int Port;
+
+    private TcpClient client_;
+
     int connectedHandler()
     {
         Debug.Log(string.Format("连接{0}:{1}成功", Address, Port));
@@ -18,10 +22,8 @@ public class game : MonoBehaviour
 
     void Start()
     {
-        TcpClient client = new TcpClient(Address, Port);
-        client.Connected += connectedHandler;
-
-        client.Connect();
+        client_ = new TcpClient(Address, Port, Utils.JobQue.Instance);
+        client_.Start();
 
         var req = new Cerberus.UserAuthReq();
         req.AppID = "11112222";
@@ -42,11 +44,33 @@ public class game : MonoBehaviour
         Debug.Log(rsp.AppID);
         Debug.Log(rsp.UserID);
         Debug.Log(rsp.AppSecret);
+
+        ushort a = 0x0102;
+        var buf = BitConverter.GetBytes(a);
+        a = Endian.ToBig(ref buf);
+
+        Debug.Log(string.Format("{0}", a.ToString("X")));
+
+        a = Endian.ToLocal(ref buf);
+        Debug.Log(string.Format("{0}", a.ToString("X")));
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetKey(KeyCode.Escape) || Input.GetKey(KeyCode.Home) || Input.GetKey(KeyCode.Menu))
+        {
+            client_.Stop();
+        } else
+        {
+            try
+            {
+                client_.Write(Encoding.UTF8.GetBytes("hello world"));
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex.Message);
+            }
+        }
     }
 }
