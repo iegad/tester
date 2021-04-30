@@ -17,8 +17,8 @@ namespace Assets.Scripts.Utils
         private Socket sock_;
         private Thread thread_;
 
-        //public delegate int ConnectHandler(string localEndpoint, string remoteEndpoint);
-        //public event ConnectHandler Connected;
+        public delegate int ConnectHandler(string localEndpoint, string remoteEndpoint);
+        public event ConnectHandler ConnectedEvent;
 
 
         public TcpClient(string addr, int port, JobQue<Package> que)
@@ -40,8 +40,6 @@ namespace Assets.Scripts.Utils
 
             try
             {
-
-
                 ThreadStart targ = new ThreadStart(_start);
                 thread_ = new Thread(targ);
                 thread_.Start();
@@ -71,9 +69,16 @@ namespace Assets.Scripts.Utils
                 sock_.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveBuffer, RECV_BUFF);
                 sock_.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendBuffer, SEND_BUFF);
             }
-            sock_.Connect(addr_, port_);
 
-            while (true)
+            sock_.Connect(addr_, port_);
+            if (ConnectedEvent(sock_.LocalEndPoint.ToString(), sock_.RemoteEndPoint.ToString()) != 0)
+            {
+                Stop();
+                return;
+            }
+
+
+            while (sock_.Connected)
             {
                 var pack = _readPackage();
                 if (pack != null)

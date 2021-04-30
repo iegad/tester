@@ -16,7 +16,9 @@ public class game : MonoBehaviour
     void Start()
     {
         client = new TcpClient(Address, Port, JobQue<Package>.Instance);
+        client.ConnectedEvent += (local, remote) => { Log.Debug("连接成功: Local => {0}, Remote => {1}", local, remote); return 0; };
         client.Start();
+        
 
         #region
         var req = new Cerberus.UserAuthReq();
@@ -34,7 +36,7 @@ public class game : MonoBehaviour
         #endregion
     }
 
-    void Update()
+    private void FixedUpdate()
     {
         var outPack = JobQue<Package>.Instance.Pop();
         if (outPack != null)
@@ -46,16 +48,11 @@ public class game : MonoBehaviour
             }
 
             var rsp = Cerberus.UserAuthReq.Parser.ParseFrom(outPack.Data.ToByteArray());
-            Log.Debug(rsp.UserID);
-            Log.Debug(rsp.AppID);
-            Log.Debug(rsp.AppSecret);
 
-            client.Write(outPack.ToByteArray());
-            n++;
-
-            if (n == 1000)
+            if (rsp.AppID != "Hello" || rsp.UserID != 88888 || rsp.AppSecret != "World")
             {
-                client.Stop();
+                Log.Error("@@@@@@@@@@@@");
+                return;
             }
         }
     }
