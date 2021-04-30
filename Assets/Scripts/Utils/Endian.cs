@@ -5,9 +5,9 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Assets.Scripts.Network
+namespace Assets.Scripts.Utils
 {
-    class Endian
+    public class Endian
     {
         public static ushort ToBig(ref byte[] data)
         {
@@ -19,7 +19,7 @@ namespace Assets.Scripts.Network
             return BitConverter.ToUInt16(data, 0);
         }
 
-        public static ushort ToLocal(ref byte[] data)
+        public static ushort ToLocalUint16(ref byte[] data)
         {
             if (BitConverter.IsLittleEndian)
             {
@@ -27,6 +27,16 @@ namespace Assets.Scripts.Network
             }
 
             return BitConverter.ToUInt16(data, 0);
+        }
+
+        public static uint ToLocalUint32(ref byte[] data)
+        {
+            if (BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(data);
+            }
+
+            return BitConverter.ToUInt32(data, 0);
         }
     }
 }

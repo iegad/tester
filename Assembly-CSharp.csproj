@@ -56,12 +56,15 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\game.cs" />
-    <Compile Include="Assets\Scripts\Network\TcpClient.cs" />
-    <Compile Include="Assets\Scripts\Protocol\Cerberus.cs" />
     <Compile Include="Assets\Scripts\Protocol\Package.cs" />
     <Compile Include="Assets\Scripts\Utils\JobQue.cs" />
-    <Compile Include="Assets\Scripts\Network\Endian.cs" />
+    <Compile Include="Assets\Scripts\Protocol\Cerberus.cs" />
+    <Compile Include="Assets\Scripts\game.cs" />
+    <Compile Include="Assets\Scripts\Utils\Log.cs" />
+    <Compile Include="Assets\Scripts\Utils\TcpClient.cs" />
+    <Compile Include="Assets\Scripts\Utils\Shadow.cs" />
+    <Compile Include="Assets\Scripts\Utils\Endian.cs" />
+    <Compile Include="Assets\Scripts\Utils\Hex.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -277,12 +280,6 @@
     <Reference Include="UnityEditor.UnityConnectModule">
       <HintPath>D:\Unity\2020.3.4f1\Editor\Data\Managed\UnityEngine\UnityEditor.UnityConnectModule.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Protobuf">
-      <HintPath>Assets\Plugins\Google.Protobuf.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Memory">
-      <HintPath>Assets\Plugins\System.Memory.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
       <HintPath>Assets\Plugins\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
@@ -291,6 +288,12 @@
     </Reference>
     <Reference Include="System.Buffers">
       <HintPath>Assets\Plugins\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory">
+      <HintPath>Assets\Plugins\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Protobuf">
+      <HintPath>Assets\Plugins\Google.Protobuf.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>D:\Unity\2020.3.4f1\Editor\Data\NetStandard\ref\2.0.0\netstandard.dll</HintPath>

@@ -1,34 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Assets.Scripts.Network;
 using Base;
 using Google.Protobuf;
-using System.Text;
-using System;
+using UnityEngine;
+using Assets.Scripts.Utils;
+
 
 public class game : MonoBehaviour
 {
     public string Address;
     public int Port;
 
-    private TcpClient client_;
+    private TcpClient client;
 
-    int connectedHandler()
-    {
-        Debug.Log(string.Format("连接{0}:{1}成功", Address, Port));
-        return 0;
-    }
+    private int n = 0;
 
     void Start()
     {
-        client_ = new TcpClient(Address, Port, Utils.JobQue.Instance);
-        client_.Start();
+        client = new TcpClient(Address, Port, JobQue<Package>.Instance);
+        client.Start();
 
+        #region
         var req = new Cerberus.UserAuthReq();
-        req.AppID = "11112222";
+        req.AppID = "Hello";
         req.UserID = 88888;
-        req.AppSecret = "213423413241234";
+        req.AppSecret = "World";
 
         var inPack = new Package();
         inPack.PID = 100001;
@@ -36,40 +30,32 @@ public class game : MonoBehaviour
         inPack.Data = ByteString.CopyFrom(req.ToByteArray());
         var data = inPack.ToByteArray();
 
-        var outPack = Package.Parser.ParseFrom(data);
-        Debug.Log(outPack.PID);
-        Debug.Log(outPack.MID);
-
-        var rsp = Cerberus.UserAuthReq.Parser.ParseFrom(outPack.Data.ToByteArray());
-        Debug.Log(rsp.AppID);
-        Debug.Log(rsp.UserID);
-        Debug.Log(rsp.AppSecret);
-
-        ushort a = 0x0102;
-        var buf = BitConverter.GetBytes(a);
-        a = Endian.ToBig(ref buf);
-
-        Debug.Log(string.Format("{0}", a.ToString("X")));
-
-        a = Endian.ToLocal(ref buf);
-        Debug.Log(string.Format("{0}", a.ToString("X")));
+        client.Write(data);
+        #endregion
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.Escape) || Input.GetKey(KeyCode.Home) || Input.GetKey(KeyCode.Menu))
+        var outPack = JobQue<Package>.Instance.Pop();
+        if (outPack != null)
         {
-            client_.Stop();
-        } else
-        {
-            try
+            if (outPack.PID != 100001 || outPack.MID != 200000)
             {
-                client_.Write(Encoding.UTF8.GetBytes("hello world"));
+                Log.Error("###########");
+                return;
             }
-            catch (Exception ex)
+
+            var rsp = Cerberus.UserAuthReq.Parser.ParseFrom(outPack.Data.ToByteArray());
+            Log.Debug(rsp.UserID);
+            Log.Debug(rsp.AppID);
+            Log.Debug(rsp.AppSecret);
+
+            client.Write(outPack.ToByteArray());
+            n++;
+
+            if (n == 1000)
             {
-                Debug.LogError(ex.Message);
+                client.Stop();
             }
         }
     }

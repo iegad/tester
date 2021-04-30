@@ -3,47 +3,49 @@ using System.Collections.Generic;
 using UnityEngine;
 using Base;
 
-namespace Utils
+namespace Assets.Scripts.Utils
 {
-    public class JobQue
-    {
-        object lk_;
-        Queue<Package> que_;
+    public class JobQue<T> where T: class
+    {// JobQue 工作队列, 用作数据缓冲
+        // 锁
+        private object lk_ = new object();
+        // 队列
+        private Queue<T> que_;
+        // 单例
+        private static JobQue<T> instance_; 
 
-        private static JobQue instance_;
-
-        public static JobQue Instance
-        {
+        public static JobQue<T> Instance
+        {// 单例属性
             get
             {
                 if (instance_ == null)
                 {
-                    instance_ = new JobQue();
+                    instance_ = new JobQue<T>();
                 }
                 return instance_;
             }
         }
 
         private JobQue()
-        {
-            lk_ = new object();
-            que_ = new Queue<Package>();
+        {// 私有构造函数
+            que_ = new Queue<T>();
         }
 
-        public void Push(Package pack)
-        {
+        public void Push(T element)
+        {// 入队
             lock (lk_)
             {
-                que_.Enqueue(pack);
+                que_.Enqueue(element);
             }
         }
 
-        public Package Pop()
-        {
-            Package pack;
+        public T Pop()
+        {// 出队
+            T pack = null;
             lock (lk_)
             {
-                pack = que_.Dequeue();
+                if (que_.Count > 0)
+                    pack = que_.Dequeue();
             }
             return pack;
         }
