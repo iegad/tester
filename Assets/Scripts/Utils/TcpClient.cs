@@ -1,6 +1,3 @@
-//#define __HEAD_SIZE_4 // 4 字节消息头
-#define __HEAD_SIZE_2 // 2 字节消息头
-
 using System;
 using System.Net.Sockets;
 using System.Threading;
@@ -10,13 +7,7 @@ namespace Assets.Scripts.Utils
 {
     public class TcpClient : INetClient
     {
-#if   __HEAD_SIZE_4
-        const int HEAD_SIZE = 4;
-#elif __HEAD_SIZE_2
-        const int HEAD_SIZE = 2;
-#else
-#error "HEAD_SIZE IS INVALID"
-#endif
+        public int HEAD_SIZE { get; set; }
         const int RECV_BUFF = 1024 * 1024;
         const int SEND_BUFF = 1024 * 512;
 
@@ -32,14 +23,19 @@ namespace Assets.Scripts.Utils
 
         public TcpClient(string addr, int port, JobQue<Package> que)
         {
+            HEAD_SIZE = 2;
             addr_ = addr;
             port_ = port;
             que_ = que;
-
         }
 
         public void Start()
         {
+            if (thread_ != null)
+            {
+                throw new Exception("Networking is already running");
+            }
+
             if (sock_ != null)
             {
                 if (sock_.Connected)
@@ -117,7 +113,6 @@ namespace Assets.Scripts.Utils
             while (nleft > 0)
             {
                 n = sock_.Receive(hbuf, pos, nleft, SocketFlags.None);
-
                 nleft -= n;
                 pos += n;
             }
@@ -125,17 +120,24 @@ namespace Assets.Scripts.Utils
             if (nleft != 0)
                 return null;
 
-#if   __HEAD_SIZE_4
-            uint ui = Endian.ToLocalUint32(ref hbuf);
-            ui = (uint)~ui;
-            nleft = (int)ui + 1;
-#elif __HEAD_SIZE_2
-            ushort us = Endian.ToLocalUint16(ref hbuf);
-            us = (ushort)~us;
-            nleft = us + 1;
-#else
-#error "HEAD_SIZE IS INVALID"
-#endif
+            switch (HEAD_SIZE)
+            {
+                case 2:
+                    ushort us = Endian.ToLocalUint16(ref hbuf);
+                    us = (ushort)~us;
+                    nleft = us + 1;
+                    break;
+
+                case 4:
+                    uint ui = Endian.ToLocalUint32(ref hbuf);
+                    ui = (uint)~ui;
+                    nleft = (int)ui + 1;
+                    break;
+
+                default:
+                    throw new Exception("HeadSize is invalid");
+            }
+
             if (nleft == 0)
                 return null;
 
@@ -144,7 +146,6 @@ namespace Assets.Scripts.Utils
             while (nleft > 0)
             {
                 n = sock_.Receive(data, pos, nleft, SocketFlags.None);
-
                 nleft -= n;
                 pos += n;
             }
@@ -166,23 +167,29 @@ namespace Assets.Scripts.Utils
 
             byte[] hbuf;
 
-#if   __HEAD_SIZE_4
-            if (dataLen > Int32.MaxValue)
-                throw new Exception("data is too long");
+            switch (HEAD_SIZE)
+            {
+                case 2:
+                    if (dataLen > UInt16.MaxValue)
+                        throw new Exception("data is too long");
 
-            uint ui = (uint)(dataLen - 1);
-            ui = (uint)~ui;
-            hbuf = BitConverter.GetBytes(ui);
-#elif __HEAD_SIZE_2
-            if (dataLen > UInt16.MaxValue)
-                throw new Exception("data is too long");
+                    ushort us = (ushort)(dataLen - 1);
+                    us = (ushort)~us;
+                    hbuf = BitConverter.GetBytes(us);
+                    break;
 
-            ushort us = (ushort)(dataLen - 1);
-            us = (ushort)~us;
-            hbuf = BitConverter.GetBytes(us);
-#else
-#error "HEAD_SIZE IS INVALID"
-#endif
+                case 4:
+                    if (dataLen > Int32.MaxValue)
+                        throw new Exception("data is too long");
+
+                    uint ui = (uint)(dataLen - 1);
+                    ui = (uint)~ui;
+                    hbuf = BitConverter.GetBytes(ui);
+                    break;
+
+                default:
+                    throw new Exception("HeadSize is invalid");
+            }
 
             int n = HEAD_SIZE + dataLen;
             Endian.ToBig(ref hbuf);

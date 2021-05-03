@@ -2,7 +2,7 @@ using Base;
 using Google.Protobuf;
 using UnityEngine;
 using Assets.Scripts.Utils;
-
+using System;
 
 public class game : MonoBehaviour
 {
@@ -17,7 +17,6 @@ public class game : MonoBehaviour
         client = NetClientFactory.New(protocol, Address, Port, JobQue<Package>.Instance);
         client.Start();
         
-
         #region
         var req = new Cerberus.UserAuthReq();
         req.AppID = "Hello";
@@ -27,6 +26,7 @@ public class game : MonoBehaviour
         var inPack = new Package();
         inPack.PID = 100001;
         inPack.MID = 200000;
+        inPack.Idempotent = (DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000;
         inPack.Data = ByteString.CopyFrom(req.ToByteArray());
         var data = inPack.ToByteArray();
 
@@ -53,7 +53,20 @@ public class game : MonoBehaviour
                 return;
             }
 
-            Log.Debug(ProtocEx.ToJson(outPack));
+            Log.Debug(ProtocEx.ToJson(rsp));
+            var req = new Cerberus.UserAuthReq();
+            req.AppID = "Hello";
+            req.UserID = 88888;
+            req.AppSecret = "World";
+
+            var inPack = new Package();
+            inPack.PID = 100001;
+            inPack.MID = 200000;
+            inPack.Idempotent = (DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000;
+            inPack.Data = ByteString.CopyFrom(req.ToByteArray());
+            var data = inPack.ToByteArray();
+
+            client.Write(data);
         }
     }
 }

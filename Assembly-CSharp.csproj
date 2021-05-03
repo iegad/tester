@@ -57,17 +57,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Utils\Log.cs" />
+    <Compile Include="Assets\Scripts\Utils\KcpClient.cs" />
     <Compile Include="Assets\Scripts\Protocol\Package.cs" />
+    <Compile Include="Assets\Scripts\Utils\ProtocEx.cs" />
     <Compile Include="Assets\Scripts\Utils\TcpClient.cs" />
     <Compile Include="Assets\Scripts\Utils\JobQue.cs" />
     <Compile Include="Assets\Scripts\Utils\Shadow.cs" />
     <Compile Include="Assets\Scripts\Protocol\Cerberus.cs" />
     <Compile Include="Assets\Scripts\game.cs" />
     <Compile Include="Assets\Scripts\Utils\Hex.cs" />
-    <Compile Include="Assets\Scripts\Utils\Endian.cs" />
-    <Compile Include="Assets\Scripts\Utils\ProtocEx.cs" />
-    <Compile Include="Assets\Scripts\Utils\KcpClient.cs" />
     <Compile Include="Assets\Scripts\Utils\NetClient.cs" />
+    <Compile Include="Assets\Scripts\Utils\Endian.cs" />
+    <Compile Include="Assets\Scripts\KCP\UDPSession.cs" />
+    <Compile Include="Assets\Scripts\KCP\ByteBuffer.cs" />
+    <Compile Include="Assets\Scripts\KCP\KCP.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

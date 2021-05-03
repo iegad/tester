@@ -164,6 +164,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Address: 127.0.0.1
   Port: 6688
+  protocol: 1
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
