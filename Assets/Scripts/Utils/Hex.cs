@@ -18,7 +18,7 @@ namespace Assets.Scripts.Utils
             return ret;
         }
 
-        public static string FromBytes(byte[] data, bool captital = false)
+        public static string ToString(byte[] data, bool captital = false)
         {
             string fmt = "x2";
             if (captital)

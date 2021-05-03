@@ -18,7 +18,7 @@ namespace Assets.Scripts.Utils
             int line = st.GetFrame(0).GetFileLineNumber();
             string file = st.GetFrame(0).GetFileName();
 
-            UnityEngine.Debug.Log(string.Format("[<color=#000>{0}</color>:<color=#000>{1}</color>] {2}", file, line, getContext(args)));
+            UnityEngine.Debug.Log(string.Format("[<color=#000>{0}</color>:<color=#000>{1}</color>] <color=#C300C0>{2}</color>", file, line, getContext(args)));
         }
 
         public static void Warn(params object[] args)
@@ -27,7 +27,7 @@ namespace Assets.Scripts.Utils
             int line = st.GetFrame(0).GetFileLineNumber();
             string file = st.GetFrame(0).GetFileName();
 
-            UnityEngine.Debug.LogWarning(string.Format("[<color=#000>{0}</color>:<color=#000>{1}</color>] {2}", file, line, getContext(args)));
+            UnityEngine.Debug.LogWarning(string.Format("[<color=#000>{0}</color>:<color=#000>{1}</color>] <color=#C300C0>{2}</color>", file, line, getContext(args)));
         }
 
         public static void Error(params object[] args)
@@ -36,7 +36,7 @@ namespace Assets.Scripts.Utils
             int line = st.GetFrame(0).GetFileLineNumber();
             string file = st.GetFrame(0).GetFileName();
 
-            UnityEngine.Debug.LogError(string.Format("[<color=#000>{0}</color>:<color=#000>{1}</color>] {2}", file, line, getContext(args)));
+            UnityEngine.Debug.LogError(string.Format("[<color=#000>{0}</color>:<color=#000>{1}</color>] <color=#C300C0>{2}</color>", file, line, getContext(args)));
         }
 
         private static string getContext(params object[] args)

@@ -8,15 +8,13 @@ public class game : MonoBehaviour
 {
     public string Address;
     public int Port;
+    public Protocol protocol;
 
-    private TcpClient client;
-
-    private int n = 0;
+    private INetClient client;
 
     void Start()
     {
-        client = new TcpClient(Address, Port, JobQue<Package>.Instance);
-        client.ConnectedEvent += (local, remote) => { Log.Debug("连接成功: Local => {0}, Remote => {1}", local, remote); return 0; };
+        client = NetClientFactory.New(protocol, Address, Port, JobQue<Package>.Instance);
         client.Start();
         
 
@@ -54,6 +52,8 @@ public class game : MonoBehaviour
                 Log.Error("@@@@@@@@@@@@");
                 return;
             }
+
+            Log.Debug(ProtocEx.ToJson(outPack));
         }
     }
 }

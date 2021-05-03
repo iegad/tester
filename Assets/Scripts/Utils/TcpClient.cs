@@ -1,3 +1,6 @@
+//#define __HEAD_SIZE_4 // 4 字节消息头
+#define __HEAD_SIZE_2 // 2 字节消息头
+
 using System;
 using System.Net.Sockets;
 using System.Threading;
@@ -5,9 +8,15 @@ using Base;
 
 namespace Assets.Scripts.Utils
 {
-    public class TcpClient
+    public class TcpClient : INetClient
     {
+#if   __HEAD_SIZE_4
         const int HEAD_SIZE = 4;
+#elif __HEAD_SIZE_2
+        const int HEAD_SIZE = 2;
+#else
+#error "HEAD_SIZE IS INVALID"
+#endif
         const int RECV_BUFF = 1024 * 1024;
         const int SEND_BUFF = 1024 * 512;
 
@@ -71,7 +80,7 @@ namespace Assets.Scripts.Utils
             }
 
             sock_.Connect(addr_, port_);
-            if (ConnectedEvent(sock_.LocalEndPoint.ToString(), sock_.RemoteEndPoint.ToString()) != 0)
+            if (ConnectedEvent != null && ConnectedEvent(sock_.LocalEndPoint.ToString(), sock_.RemoteEndPoint.ToString()) != 0)
             {
                 Stop();
                 return;
@@ -89,6 +98,7 @@ namespace Assets.Scripts.Utils
         private Package _readPackage()
         {
             byte[] data = _readn();
+            Log.Debug(Hex.ToString(data));
             if (data != null)
                 return Package.Parser.ParseFrom(data);
             return null;
@@ -98,12 +108,11 @@ namespace Assets.Scripts.Utils
         public void Write(byte[] data)
         {
             _writen(data);
-
         }
 
         private byte[] _readn()
         {
-            int n = 0, nleft = HEAD_SIZE, pos = 0;
+            int n, nleft = HEAD_SIZE, pos = 0;
             byte[] hbuf = new byte[HEAD_SIZE];
             while (nleft > 0)
             {
@@ -116,24 +125,17 @@ namespace Assets.Scripts.Utils
             if (nleft != 0)
                 return null;
 
-            switch (HEAD_SIZE)
-            {
-                case 2:
-                    ushort us = Endian.ToLocalUint16(ref hbuf);
-                    us = (ushort)~us;
-                    nleft = us + 1;
-                    break;
-
-                case 4:
-                    uint ui = Endian.ToLocalUint32(ref hbuf);
-                    ui = (uint)~ui;
-                    nleft = (int)ui + 1;
-                    break;
-
-                default:
-                    throw new Exception("HEAD_SIZE is invalid");
-            }
-
+#if   __HEAD_SIZE_4
+            uint ui = Endian.ToLocalUint32(ref hbuf);
+            ui = (uint)~ui;
+            nleft = (int)ui + 1;
+#elif __HEAD_SIZE_2
+            ushort us = Endian.ToLocalUint16(ref hbuf);
+            us = (ushort)~us;
+            nleft = us + 1;
+#else
+#error "HEAD_SIZE IS INVALID"
+#endif
             if (nleft == 0)
                 return null;
 
@@ -164,29 +166,23 @@ namespace Assets.Scripts.Utils
 
             byte[] hbuf;
 
-            switch (HEAD_SIZE)
-            {
-                case 2:
-                    if (dataLen > UInt16.MaxValue)
-                        throw new Exception("data is too long");
+#if   __HEAD_SIZE_4
+            if (dataLen > Int32.MaxValue)
+                throw new Exception("data is too long");
 
-                    ushort us = (ushort)(dataLen - 1);
-                    us = (ushort)~us;
-                    hbuf = BitConverter.GetBytes(us);
-                    break;
+            uint ui = (uint)(dataLen - 1);
+            ui = (uint)~ui;
+            hbuf = BitConverter.GetBytes(ui);
+#elif __HEAD_SIZE_2
+            if (dataLen > UInt16.MaxValue)
+                throw new Exception("data is too long");
 
-                case 4:
-                    if (dataLen > Int32.MaxValue)
-                        throw new Exception("data is too long");
-
-                    uint ui = (uint)(dataLen - 1);
-                    ui = (uint)~ui;
-                    hbuf = BitConverter.GetBytes(ui);
-                    break;
-
-                default:
-                    throw new Exception("HEAD_SIZE is invalid");
-            }
+            ushort us = (ushort)(dataLen - 1);
+            us = (ushort)~us;
+            hbuf = BitConverter.GetBytes(us);
+#else
+#error "HEAD_SIZE IS INVALID"
+#endif
 
             int n = HEAD_SIZE + dataLen;
             Endian.ToBig(ref hbuf);

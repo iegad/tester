@@ -56,15 +56,18 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Utils\Log.cs" />
     <Compile Include="Assets\Scripts\Protocol\Package.cs" />
+    <Compile Include="Assets\Scripts\Utils\TcpClient.cs" />
     <Compile Include="Assets\Scripts\Utils\JobQue.cs" />
+    <Compile Include="Assets\Scripts\Utils\Shadow.cs" />
     <Compile Include="Assets\Scripts\Protocol\Cerberus.cs" />
     <Compile Include="Assets\Scripts\game.cs" />
-    <Compile Include="Assets\Scripts\Utils\Log.cs" />
-    <Compile Include="Assets\Scripts\Utils\TcpClient.cs" />
-    <Compile Include="Assets\Scripts\Utils\Shadow.cs" />
-    <Compile Include="Assets\Scripts\Utils\Endian.cs" />
     <Compile Include="Assets\Scripts\Utils\Hex.cs" />
+    <Compile Include="Assets\Scripts\Utils\Endian.cs" />
+    <Compile Include="Assets\Scripts\Utils\ProtocEx.cs" />
+    <Compile Include="Assets\Scripts\Utils\KcpClient.cs" />
+    <Compile Include="Assets\Scripts\Utils\NetClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
