@@ -1,4 +1,4 @@
-﻿using Base;
+using Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +10,9 @@ using System.Threading;
 
 namespace Assets.Scripts.Utils
 {
-
     public class KcpClient : INetClient
-    {
-        public int HEAD_SIZE { get; set; }
+    {// KCP客户端
+        public int HEAD_SIZE { get; set; } // 消息头长度
 
         private string addr_;
         private int port_;
@@ -29,7 +28,7 @@ namespace Assets.Scripts.Utils
             HEAD_SIZE = headSize;
         }
         public void Start()
-        {
+        {// 启动后台读工作线程
             if (thread_ != null)
             {
                 throw new Exception("Networking is already running");
@@ -111,13 +110,13 @@ namespace Assets.Scripts.Utils
             switch (HEAD_SIZE)
             {
                 case 2:
-                    ushort us = Endian.ToLocalUint16(ref hbuf);
+                    ushort us = Binary.BigEndian.Uint16(hbuf);
                     us = (ushort)~us;
                     nleft = us + 1;
                     break;
 
                 case 4:
-                    uint ui = Endian.ToLocalUint32(ref hbuf);
+                    uint ui = Binary.BigEndian.Uint32(hbuf);
                     ui = (uint)~ui;
                     nleft = (int)ui + 1;
                     break;
@@ -157,7 +156,7 @@ namespace Assets.Scripts.Utils
             if (dataLen == 0)
                 return;
 
-            byte[] hbuf;
+            byte[] hbuf = new byte[HEAD_SIZE];
 
             switch (HEAD_SIZE)
             {
@@ -167,7 +166,7 @@ namespace Assets.Scripts.Utils
 
                     ushort us = (ushort)(dataLen - 1);
                     us = (ushort)~us;
-                    hbuf = BitConverter.GetBytes(us);
+                    Binary.BigEndian.PutUint16(ref hbuf, us);
                     break;
 
                 case 4:
@@ -176,7 +175,7 @@ namespace Assets.Scripts.Utils
 
                     uint ui = (uint)(dataLen - 1);
                     ui = (uint)~ui;
-                    hbuf = BitConverter.GetBytes(ui);
+                    Binary.BigEndian.PutUint32(ref hbuf, ui);
                     break;
 
                 default:
@@ -184,8 +183,6 @@ namespace Assets.Scripts.Utils
             }
 
             int n = HEAD_SIZE + dataLen;
-            Endian.ToBig(ref hbuf);
-
             var buf = new byte[n];
             hbuf.CopyTo(buf, 0);
 

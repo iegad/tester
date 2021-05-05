@@ -6,35 +6,40 @@ using Base;
 namespace Assets.Scripts.Utils
 {
     public class TcpClient : INetClient
-    {
-        public int HEAD_SIZE { get; set; }
-        const int RECV_BUFF = 1024 * 1024;
-        const int SEND_BUFF = 1024 * 512;
+    {// TCP 客户端
+        public int HEAD_SIZE { get; set; } // 消息头条度
 
-        private string addr_;
-        private int port_;
-        private JobQue<Package> que_;
+        // 读缓冲区大小(1M)
+        const int MAX_SIZE_RBUF = 1024 * 1024;
+        // 写缓冲区大小(512K)
+        const int MAX_SIZE_WBUF = 1024 * 512;
+
+        private readonly string addr_;
+        private readonly int port_;
+        // 任务队列
+        private readonly JobQue<Package> que_; 
+
         private Socket sock_;
         private Thread thread_;
 
-        public delegate int ConnectHandler(string localEndpoint, string remoteEndpoint);
+        // 连接成功事件
         public event ConnectHandler ConnectedEvent;
 
-
-        public TcpClient(string addr, int port, JobQue<Package> que)
+        public TcpClient(string addr, int port, JobQue<Package> que, int headSize = 2)
         {
-            HEAD_SIZE = 2;
+            if (headSize != 2 && headSize != 4)
+                throw new Exception("HeadSize is invalid");
+
+            HEAD_SIZE = headSize;
             addr_ = addr;
             port_ = port;
             que_ = que;
         }
 
         public void Start()
-        {
+        {// 启动后台读工作线程
             if (thread_ != null)
-            {
                 throw new Exception("Networking is already running");
-            }
 
             if (sock_ != null)
             {
@@ -65,14 +70,19 @@ namespace Assets.Scripts.Utils
             }
         }
 
+        public void Write(byte[] data)
+        {
+            _writen(data);
+        }
+
         private void _start()
         {
             if (sock_ == null)
             {
                 sock_ = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 sock_.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.NoDelay, true);
-                sock_.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveBuffer, RECV_BUFF);
-                sock_.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendBuffer, SEND_BUFF);
+                sock_.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveBuffer, MAX_SIZE_RBUF);
+                sock_.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendBuffer, MAX_SIZE_WBUF);
             }
 
             sock_.Connect(addr_, port_);
@@ -100,16 +110,13 @@ namespace Assets.Scripts.Utils
             return null;
         }
 
-
-        public void Write(byte[] data)
-        {
-            _writen(data);
-        }
-
         private byte[] _readn()
-        {
+        {// 读消息, 仅限框架协议使用
+
+            // Step 1: 读消息头
             int n, nleft = HEAD_SIZE, pos = 0;
             byte[] hbuf = new byte[HEAD_SIZE];
+
             while (nleft > 0)
             {
                 n = sock_.Receive(hbuf, pos, nleft, SocketFlags.None);
@@ -123,13 +130,13 @@ namespace Assets.Scripts.Utils
             switch (HEAD_SIZE)
             {
                 case 2:
-                    ushort us = Endian.ToLocalUint16(ref hbuf);
+                    ushort us = Binary.BigEndian.Uint16(hbuf);
                     us = (ushort)~us;
                     nleft = us + 1;
                     break;
 
                 case 4:
-                    uint ui = Endian.ToLocalUint32(ref hbuf);
+                    uint ui = Binary.BigEndian.Uint32(hbuf);
                     ui = (uint)~ui;
                     nleft = (int)ui + 1;
                     break;
@@ -165,7 +172,7 @@ namespace Assets.Scripts.Utils
             if (dataLen == 0)
                 return;
 
-            byte[] hbuf;
+            byte[] hbuf = new byte[HEAD_SIZE];
 
             switch (HEAD_SIZE)
             {
@@ -175,7 +182,7 @@ namespace Assets.Scripts.Utils
 
                     ushort us = (ushort)(dataLen - 1);
                     us = (ushort)~us;
-                    hbuf = BitConverter.GetBytes(us);
+                    Binary.BigEndian.PutUint16(ref hbuf, us);
                     break;
 
                 case 4:
@@ -184,7 +191,7 @@ namespace Assets.Scripts.Utils
 
                     uint ui = (uint)(dataLen - 1);
                     ui = (uint)~ui;
-                    hbuf = BitConverter.GetBytes(ui);
+                    Binary.BigEndian.PutUint32(ref hbuf, ui);
                     break;
 
                 default:
@@ -192,8 +199,6 @@ namespace Assets.Scripts.Utils
             }
 
             int n = HEAD_SIZE + dataLen;
-            Endian.ToBig(ref hbuf);
-
             var buf = new byte[n];
             hbuf.CopyTo(buf, 0);
 

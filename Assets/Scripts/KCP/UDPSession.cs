@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Utils;
+using Assets.Scripts.Utils;
 using System;
 using System.Net;
 using System.Net.Sockets;

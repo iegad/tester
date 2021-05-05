@@ -6,16 +6,16 @@ using Base;
 namespace Assets.Scripts.Utils
 {
     public class JobQue<T> where T: class
-    {// JobQue ¹¤×÷¶ÓÁĞ, ÓÃ×÷Êı¾İ»º³å
-        // Ëø
+    {// JobQue å·¥ä½œé˜Ÿåˆ—, ç”¨ä½œæ•°æ®ç¼“å†²
+        // é”
         private object lk_ = new object();
-        // ¶ÓÁĞ
-        private Queue<T> que_;
-        // µ¥Àı
+        // é˜Ÿåˆ—
+        private Queue<T> que_ = new Queue<T>();
+        // å•ä¾‹
         private static JobQue<T> instance_; 
 
         public static JobQue<T> Instance
-        {// µ¥ÀıÊôĞÔ
+        {// å•ä¾‹å±æ€§
             get
             {
                 if (instance_ == null)
@@ -27,12 +27,10 @@ namespace Assets.Scripts.Utils
         }
 
         private JobQue()
-        {// Ë½ÓĞ¹¹Ôìº¯Êı
-            que_ = new Queue<T>();
-        }
+        {}
 
         public void Push(T element)
-        {// Èë¶Ó
+        {// å…¥é˜Ÿ
             lock (lk_)
             {
                 que_.Enqueue(element);
@@ -40,7 +38,7 @@ namespace Assets.Scripts.Utils
         }
 
         public T Pop()
-        {// ³ö¶Ó
+        {// å‡ºé˜Ÿ
             T pack = null;
             lock (lk_)
             {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +8,8 @@ namespace Assets.Scripts.Utils
 {
     public class Hex
     {
+        private Hex() {}
+        
         public static byte[] ToBytes(string str)
         {
             byte[] ret = new byte[str.Length / 2];
