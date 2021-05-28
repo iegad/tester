@@ -15,7 +15,7 @@ namespace Assets.Scripts.Utils
         {
             private BigEndian() { }
 
-            public static UInt16 Uint16(byte[] data)
+            public static ushort Uint16(byte[] data)
             {
                 if (BitConverter.IsLittleEndian)
                     Array.Reverse(data);
@@ -23,7 +23,7 @@ namespace Assets.Scripts.Utils
                 return BitConverter.ToUInt16(data, 0);
             }
 
-            public static UInt32 Uint32(byte[] data)
+            public static uint Uint32(byte[] data)
             {
                 if (BitConverter.IsLittleEndian)
                     Array.Reverse(data);
