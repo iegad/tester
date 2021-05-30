@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Base {
+namespace pb {
 
   /// <summary>Holder for reflection information generated from package.proto</summary>
   public static partial class PackageReflection {
@@ -24,17 +24,17 @@ namespace Base {
     static PackageReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Cg1wYWNrYWdlLnByb3RvEgRiYXNlIrMBCgdQYWNrYWdlEgsKA1BJRBgBIAEo",
+            "Cg1wYWNrYWdlLnByb3RvEgRiYXNlIqwBCgdQYWNrYWdlEgsKA1BJRBgBIAEo",
             "BRILCgNNSUQYAiABKAUSDAoERGF0YRgDIAEoDBISCgpJZGVtcG90ZW50GAQg",
-            "ASgDEg4KBlRvTm9kZRgFIAEoCRIPCgdNb3VudElEGAYgASgJEhMKC1VzZXJB",
-            "ZGRyZXNzGAcgASgJEg4KBlVzZXJJRBgIIAEoAxIVCg1Gcm9tU2VydmljZUlE",
-            "GAkgASgJEg8KB1RvVXNlcnMYCiADKAMqPAoJUGFja2FnZUlEEhUKEVBhY2th",
-            "Z2VJRF9JbnZhbGlkEAASGAoUUGFja2FnZUlEX0lkZW1wb3RlbnQQAUIFWgMv",
-            "cGJiBnByb3RvMw=="));
+            "ASgDEg8KB1N1bUNvZGUYBSABKAUSEgoKVG9Ob2RlQWRkchgGIAEoCRIVCg1G",
+            "cm9tTW91bnRBZGRyGAcgASgJEhQKDEZyb21Vc2VyQWRkchgIIAEoCRITCgtU",
+            "b1VzZXJBZGRycxgJIAMoCSo8CglQYWNrYWdlSUQSFQoRUGFja2FnZUlEX0lu",
+            "dmFsaWQQABIYChRQYWNrYWdlSURfSWRlbXBvdGVudBABQgpaAy9wYqoCAnBi",
+            "YgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Base.PackageID), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Base.Package), global::Base.Package.Parser, new[]{ "PID", "MID", "Data", "Idempotent", "ToNode", "MountID", "UserAddress", "UserID", "FromServiceID", "ToUsers" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::pb.PackageID), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::pb.Package), global::pb.Package.Parser, new[]{ "PID", "MID", "Data", "Idempotent", "SumCode", "ToNodeAddr", "FromMountAddr", "FromUserAddr", "ToUserAddrs" }, null, null, null, null)
           }));
     }
     #endregion
@@ -64,7 +64,7 @@ namespace Base {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Base.PackageReflection.Descriptor.MessageTypes[0]; }
+      get { return global::pb.PackageReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -85,12 +85,11 @@ namespace Base {
       mID_ = other.mID_;
       data_ = other.data_;
       idempotent_ = other.idempotent_;
-      toNode_ = other.toNode_;
-      mountID_ = other.mountID_;
-      userAddress_ = other.userAddress_;
-      userID_ = other.userID_;
-      fromServiceID_ = other.fromServiceID_;
-      toUsers_ = other.toUsers_.Clone();
+      sumCode_ = other.sumCode_;
+      toNodeAddr_ = other.toNodeAddr_;
+      fromMountAddr_ = other.fromMountAddr_;
+      fromUserAddr_ = other.fromUserAddr_;
+      toUserAddrs_ = other.toUserAddrs_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -152,78 +151,70 @@ namespace Base {
       }
     }
 
-    /// <summary>Field number for the "ToNode" field.</summary>
-    public const int ToNodeFieldNumber = 5;
-    private string toNode_ = "";
+    /// <summary>Field number for the "SumCode" field.</summary>
+    public const int SumCodeFieldNumber = 5;
+    private int sumCode_;
+    /// <summary>
+    /// 校验和
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int SumCode {
+      get { return sumCode_; }
+      set {
+        sumCode_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "ToNodeAddr" field.</summary>
+    public const int ToNodeAddrFieldNumber = 6;
+    private string toNodeAddr_ = "";
     /// <summary>
     /// 客户端代入
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string ToNode {
-      get { return toNode_; }
+    public string ToNodeAddr {
+      get { return toNodeAddr_; }
       set {
-        toNode_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        toNodeAddr_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
-    /// <summary>Field number for the "MountID" field.</summary>
-    public const int MountIDFieldNumber = 6;
-    private string mountID_ = "";
+    /// <summary>Field number for the "FromMountAddr" field.</summary>
+    public const int FromMountAddrFieldNumber = 7;
+    private string fromMountAddr_ = "";
     /// <summary>
     /// 网关代入
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string MountID {
-      get { return mountID_; }
+    public string FromMountAddr {
+      get { return fromMountAddr_; }
       set {
-        mountID_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        fromMountAddr_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
-    /// <summary>Field number for the "UserAddress" field.</summary>
-    public const int UserAddressFieldNumber = 7;
-    private string userAddress_ = "";
+    /// <summary>Field number for the "FromUserAddr" field.</summary>
+    public const int FromUserAddrFieldNumber = 8;
+    private string fromUserAddr_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string UserAddress {
-      get { return userAddress_; }
+    public string FromUserAddr {
+      get { return fromUserAddr_; }
       set {
-        userAddress_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        fromUserAddr_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
-    /// <summary>Field number for the "UserID" field.</summary>
-    public const int UserIDFieldNumber = 8;
-    private long userID_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public long UserID {
-      get { return userID_; }
-      set {
-        userID_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "FromServiceID" field.</summary>
-    public const int FromServiceIDFieldNumber = 9;
-    private string fromServiceID_ = "";
+    /// <summary>Field number for the "ToUserAddrs" field.</summary>
+    public const int ToUserAddrsFieldNumber = 9;
+    private static readonly pb::FieldCodec<string> _repeated_toUserAddrs_codec
+        = pb::FieldCodec.ForString(74);
+    private readonly pbc::RepeatedField<string> toUserAddrs_ = new pbc::RepeatedField<string>();
     /// <summary>
     /// 节点代入
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string FromServiceID {
-      get { return fromServiceID_; }
-      set {
-        fromServiceID_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "ToUsers" field.</summary>
-    public const int ToUsersFieldNumber = 10;
-    private static readonly pb::FieldCodec<long> _repeated_toUsers_codec
-        = pb::FieldCodec.ForInt64(82);
-    private readonly pbc::RepeatedField<long> toUsers_ = new pbc::RepeatedField<long>();
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<long> ToUsers {
-      get { return toUsers_; }
+    public pbc::RepeatedField<string> ToUserAddrs {
+      get { return toUserAddrs_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -243,12 +234,11 @@ namespace Base {
       if (MID != other.MID) return false;
       if (Data != other.Data) return false;
       if (Idempotent != other.Idempotent) return false;
-      if (ToNode != other.ToNode) return false;
-      if (MountID != other.MountID) return false;
-      if (UserAddress != other.UserAddress) return false;
-      if (UserID != other.UserID) return false;
-      if (FromServiceID != other.FromServiceID) return false;
-      if(!toUsers_.Equals(other.toUsers_)) return false;
+      if (SumCode != other.SumCode) return false;
+      if (ToNodeAddr != other.ToNodeAddr) return false;
+      if (FromMountAddr != other.FromMountAddr) return false;
+      if (FromUserAddr != other.FromUserAddr) return false;
+      if(!toUserAddrs_.Equals(other.toUserAddrs_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -259,12 +249,11 @@ namespace Base {
       if (MID != 0) hash ^= MID.GetHashCode();
       if (Data.Length != 0) hash ^= Data.GetHashCode();
       if (Idempotent != 0L) hash ^= Idempotent.GetHashCode();
-      if (ToNode.Length != 0) hash ^= ToNode.GetHashCode();
-      if (MountID.Length != 0) hash ^= MountID.GetHashCode();
-      if (UserAddress.Length != 0) hash ^= UserAddress.GetHashCode();
-      if (UserID != 0L) hash ^= UserID.GetHashCode();
-      if (FromServiceID.Length != 0) hash ^= FromServiceID.GetHashCode();
-      hash ^= toUsers_.GetHashCode();
+      if (SumCode != 0) hash ^= SumCode.GetHashCode();
+      if (ToNodeAddr.Length != 0) hash ^= ToNodeAddr.GetHashCode();
+      if (FromMountAddr.Length != 0) hash ^= FromMountAddr.GetHashCode();
+      if (FromUserAddr.Length != 0) hash ^= FromUserAddr.GetHashCode();
+      hash ^= toUserAddrs_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -297,27 +286,23 @@ namespace Base {
         output.WriteRawTag(32);
         output.WriteInt64(Idempotent);
       }
-      if (ToNode.Length != 0) {
-        output.WriteRawTag(42);
-        output.WriteString(ToNode);
+      if (SumCode != 0) {
+        output.WriteRawTag(40);
+        output.WriteInt32(SumCode);
       }
-      if (MountID.Length != 0) {
+      if (ToNodeAddr.Length != 0) {
         output.WriteRawTag(50);
-        output.WriteString(MountID);
+        output.WriteString(ToNodeAddr);
       }
-      if (UserAddress.Length != 0) {
+      if (FromMountAddr.Length != 0) {
         output.WriteRawTag(58);
-        output.WriteString(UserAddress);
+        output.WriteString(FromMountAddr);
       }
-      if (UserID != 0L) {
-        output.WriteRawTag(64);
-        output.WriteInt64(UserID);
+      if (FromUserAddr.Length != 0) {
+        output.WriteRawTag(66);
+        output.WriteString(FromUserAddr);
       }
-      if (FromServiceID.Length != 0) {
-        output.WriteRawTag(74);
-        output.WriteString(FromServiceID);
-      }
-      toUsers_.WriteTo(output, _repeated_toUsers_codec);
+      toUserAddrs_.WriteTo(output, _repeated_toUserAddrs_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -343,27 +328,23 @@ namespace Base {
         output.WriteRawTag(32);
         output.WriteInt64(Idempotent);
       }
-      if (ToNode.Length != 0) {
-        output.WriteRawTag(42);
-        output.WriteString(ToNode);
+      if (SumCode != 0) {
+        output.WriteRawTag(40);
+        output.WriteInt32(SumCode);
       }
-      if (MountID.Length != 0) {
+      if (ToNodeAddr.Length != 0) {
         output.WriteRawTag(50);
-        output.WriteString(MountID);
+        output.WriteString(ToNodeAddr);
       }
-      if (UserAddress.Length != 0) {
+      if (FromMountAddr.Length != 0) {
         output.WriteRawTag(58);
-        output.WriteString(UserAddress);
+        output.WriteString(FromMountAddr);
       }
-      if (UserID != 0L) {
-        output.WriteRawTag(64);
-        output.WriteInt64(UserID);
+      if (FromUserAddr.Length != 0) {
+        output.WriteRawTag(66);
+        output.WriteString(FromUserAddr);
       }
-      if (FromServiceID.Length != 0) {
-        output.WriteRawTag(74);
-        output.WriteString(FromServiceID);
-      }
-      toUsers_.WriteTo(ref output, _repeated_toUsers_codec);
+      toUserAddrs_.WriteTo(ref output, _repeated_toUserAddrs_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -385,22 +366,19 @@ namespace Base {
       if (Idempotent != 0L) {
         size += 1 + pb::CodedOutputStream.ComputeInt64Size(Idempotent);
       }
-      if (ToNode.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(ToNode);
+      if (SumCode != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(SumCode);
       }
-      if (MountID.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(MountID);
+      if (ToNodeAddr.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ToNodeAddr);
       }
-      if (UserAddress.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(UserAddress);
+      if (FromMountAddr.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(FromMountAddr);
       }
-      if (UserID != 0L) {
-        size += 1 + pb::CodedOutputStream.ComputeInt64Size(UserID);
+      if (FromUserAddr.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(FromUserAddr);
       }
-      if (FromServiceID.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(FromServiceID);
-      }
-      size += toUsers_.CalculateSize(_repeated_toUsers_codec);
+      size += toUserAddrs_.CalculateSize(_repeated_toUserAddrs_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -424,22 +402,19 @@ namespace Base {
       if (other.Idempotent != 0L) {
         Idempotent = other.Idempotent;
       }
-      if (other.ToNode.Length != 0) {
-        ToNode = other.ToNode;
+      if (other.SumCode != 0) {
+        SumCode = other.SumCode;
       }
-      if (other.MountID.Length != 0) {
-        MountID = other.MountID;
+      if (other.ToNodeAddr.Length != 0) {
+        ToNodeAddr = other.ToNodeAddr;
       }
-      if (other.UserAddress.Length != 0) {
-        UserAddress = other.UserAddress;
+      if (other.FromMountAddr.Length != 0) {
+        FromMountAddr = other.FromMountAddr;
       }
-      if (other.UserID != 0L) {
-        UserID = other.UserID;
+      if (other.FromUserAddr.Length != 0) {
+        FromUserAddr = other.FromUserAddr;
       }
-      if (other.FromServiceID.Length != 0) {
-        FromServiceID = other.FromServiceID;
-      }
-      toUsers_.Add(other.toUsers_);
+      toUserAddrs_.Add(other.toUserAddrs_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -470,29 +445,24 @@ namespace Base {
             Idempotent = input.ReadInt64();
             break;
           }
-          case 42: {
-            ToNode = input.ReadString();
+          case 40: {
+            SumCode = input.ReadInt32();
             break;
           }
           case 50: {
-            MountID = input.ReadString();
+            ToNodeAddr = input.ReadString();
             break;
           }
           case 58: {
-            UserAddress = input.ReadString();
+            FromMountAddr = input.ReadString();
             break;
           }
-          case 64: {
-            UserID = input.ReadInt64();
+          case 66: {
+            FromUserAddr = input.ReadString();
             break;
           }
           case 74: {
-            FromServiceID = input.ReadString();
-            break;
-          }
-          case 82:
-          case 80: {
-            toUsers_.AddEntriesFrom(input, _repeated_toUsers_codec);
+            toUserAddrs_.AddEntriesFrom(input, _repeated_toUserAddrs_codec);
             break;
           }
         }
@@ -525,29 +495,24 @@ namespace Base {
             Idempotent = input.ReadInt64();
             break;
           }
-          case 42: {
-            ToNode = input.ReadString();
+          case 40: {
+            SumCode = input.ReadInt32();
             break;
           }
           case 50: {
-            MountID = input.ReadString();
+            ToNodeAddr = input.ReadString();
             break;
           }
           case 58: {
-            UserAddress = input.ReadString();
+            FromMountAddr = input.ReadString();
             break;
           }
-          case 64: {
-            UserID = input.ReadInt64();
+          case 66: {
+            FromUserAddr = input.ReadString();
             break;
           }
           case 74: {
-            FromServiceID = input.ReadString();
-            break;
-          }
-          case 82:
-          case 80: {
-            toUsers_.AddEntriesFrom(ref input, _repeated_toUsers_codec);
+            toUserAddrs_.AddEntriesFrom(ref input, _repeated_toUserAddrs_codec);
             break;
           }
         }
