@@ -59,9 +59,9 @@
     <Compile Include="Assets\Scripts\pb\Cerberus.cs" />
     <Compile Include="Assets\Scripts\pb\Sphinx.cs" />
     <Compile Include="Assets\Scripts\pb\Piper.cs" />
+    <Compile Include="Assets\Scripts\common\NodeInfo.cs" />
     <Compile Include="Assets\Scripts\pb\Alfred.cs" />
     <Compile Include="Assets\Scripts\Scenes\SampleScene.cs" />
-    <Compile Include="Assets\Scripts\common\NodeInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -744,6 +744,15 @@
     </Reference>
     <Reference Include="Unity.2D.SpriteShape.Runtime">
       <HintPath>Library\ScriptAssemblies\Unity.2D.SpriteShape.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.AdaptivePerformance.Samsung.Android.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.AdaptivePerformance.Samsung.Android.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.AdaptivePerformance.Simulator.VRR.Extension">
+      <HintPath>Library\ScriptAssemblies\Unity.AdaptivePerformance.Simulator.VRR.Extension.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.AdaptivePerformance.Samsung.Android">
+      <HintPath>Library\ScriptAssemblies\Unity.AdaptivePerformance.Samsung.Android.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
