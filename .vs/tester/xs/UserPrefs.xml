@@ -1,8 +1,8 @@
 ﻿<Properties StartupConfiguration="{69752891-D9C1-6A5A-4CAA-D73056D92F21}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Utils/Binary.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/common/NodeMap.cs">
     <Files>
-      <File FileName="Assets/Scripts/game.cs" Line="26" Column="36" />
-      <File FileName="Assets/Scripts/Utils/Binary.cs" Line="24" Column="14" />
+      <File FileName="Assets/Scripts/Scenes/SampleScene.cs" Line="20" Column="1" />
+      <File FileName="Assets/Scripts/common/NodeMap.cs" Line="16" Column="6" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -10,11 +10,10 @@
           <Node name="tester" expanded="True">
             <Node name="Assets" expanded="True">
               <Node name="Scripts" expanded="True">
-                <Node name="KCP" expanded="True" />
-                <Node name="Protocol" expanded="True" />
-                <Node name="Utils" expanded="True">
-                  <Node name="Binary.cs" selected="True" />
+                <Node name="common" expanded="True">
+                  <Node name="NodeMap.cs" selected="True" />
                 </Node>
+                <Node name="Scenes" expanded="True" />
               </Node>
             </Node>
           </Node>
@@ -24,7 +23,7 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="42db4a8e-754c-4c15-87be-34ce00344811" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="feb398a2-b7b2-4277-b2ed-cc6b16208a2f" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

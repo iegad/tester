@@ -14,6 +14,11 @@ public class SampleScene : MonoBehaviour
 
     private string errstr_ = "";
     private Task connectTask_;
+
+    void getNodes()
+    {
+        
+    }
     
 
     void Awake()
@@ -53,7 +58,7 @@ public class SampleScene : MonoBehaviour
 
     //    if (n <= 0)
     //    {
-    //        Debug.LogError("·¢ËÍÊý¾ÝÊ§°Ü");
+    //        Debug.LogError("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
     //        yield break;
     //    }
 
@@ -78,7 +83,7 @@ public class SampleScene : MonoBehaviour
 
         if (errstr_.Length > 0)
         {
-            Debug.LogError(string.Format("Á¬½Ó½ÚµãÊ§°Ü: {0}", errstr_));
+            Debug.LogError(string.Format(": {0}", errstr_));
             yield break;
         }
 
