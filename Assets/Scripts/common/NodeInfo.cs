@@ -1,41 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Alfred;
 using NKraken.nw.client;
+using NKraken.security;
 using System;
 
 using cerberus_ = NKraken.cerberus.Cerberus;
 
 public class NodeInfo
 {
-    public string Host { get; set; }
-
-    public string NodePath { get; set; }
-
-    public override string ToString()
+    private static byte[] EncodeHandler(byte[] data)
     {
-        return string.Format("[{0}] => {1}", Host, NodePath);
+        return AES128.Encode(data, cerberus_.Instance.Key);
     }
-}
 
-public class NodeMap
-{
-    private NodeMap() { }
+    private static byte[] DecodeHandler(byte[] data)
+    {
+        return AES128.Decode(data, cerberus_.Instance.Key);
+    }
 
-    private static NodeMap instance_;
-    public static NodeMap Instance
+    private NodeInfo() { }
+
+    private static NodeInfo instance_;
+    public static NodeInfo Instance
     {
         get
         {
             if (instance_ == null)
-                instance_ = new NodeMap();
+                instance_ = new NodeInfo();
             return instance_;
         }
     }
 
-    public NodeInfo Cerberus { get; set; }
-    public NodeInfo Sphinx { get; set; }
+    public Node Cerberus { get; set; }
+    public Node Sphinx { get; set; }
 
     public void SetNode(Node node)
     {
@@ -52,22 +48,14 @@ public class NodeMap
                 if (!int.TryParse(strarr[1], out port))
                     throw new Exception(string.Format("Addr is invalid: {0}", node.Addr));
 
-                cerberus_.Instance.Init(NW_PROTOCOL.TCP, strarr[0], port);
+                cerberus_.Instance.Init(NW_PROTOCOL.TCP, strarr[0], port, EncodeHandler, DecodeHandler);
+                cerberus_.Instance.Run();
 
-                Cerberus = new NodeInfo
-                {
-                    NodePath = node.NodePath,
-                    Host = node.Addr
-                };
-
+                Cerberus = node;
                 break;
 
             case "sphinx":
-                Sphinx = new NodeInfo
-                {
-                    NodePath = node.NodePath,
-                    Host = node.Addr
-                };
+                Sphinx = node;
                 break;
 
             default:

@@ -9,6 +9,8 @@ using Google.Protobuf;
 using NKraken.piper;
 using UnityEngine.UI;
 using System.Threading;
+using pb;
+using System.Text;
 
 public class SampleScene : MonoBehaviour
 {
@@ -18,12 +20,16 @@ public class SampleScene : MonoBehaviour
     public GameObject loginForm;
     public Text time;
 
+    // UI
+    public InputField phoneNum;
+    public InputField vcode;
+
     private string errstr_ = "";
-    private Task connectTask_;
+    private Task getNodeTask_;
 
     void getNodes()
     {
-        connectTask_ = new Task(() =>
+        getNodeTask_ = new Task(() =>
         {
             try
             {
@@ -41,36 +47,137 @@ public class SampleScene : MonoBehaviour
                 };
 
                 client.Write(piper.ToByteArray());
-  
+
                 byte[] rbuf = client.Read();
                 if (rbuf == null)
-                {
                     return;
-                }
- 
+
+                client.Close();
                 GetNodeRsp rsp = GetNodeRsp.Parser.ParseFrom(rbuf);
 
                 if (rsp == null)
-                {
                     return;
-                }
 
                 foreach (var node in rsp.Nodes)
-                {
-                    NodeMap.Instance.SetNode(node);
-                }
+                    NodeInfo.Instance.SetNode(node);
 
-                Debug.Log(NodeMap.Instance.Cerberus);
-                Thread.Sleep(5000);
+                Debug.Log(NodeInfo.Instance.Cerberus);
+                Debug.Log(NodeInfo.Instance.Sphinx);
+
+                Thread.Sleep(3000);
             }
             catch (Exception ex)
             {
                 errstr_ = ex.Message;
             }
         });
-        connectTask_.Start();
+        getNodeTask_.Start();
     }
-    
+
+    void connectCerberus()
+    {
+        UserLoginReq req = new UserLoginReq()
+        {
+            PhoneNum = phoneNum.text,
+            VCode = vcode.text
+        };
+        Package package = new Package()
+        {
+            PID = (int)CerberusID.PidUserDelivery,
+            MID = (int)SphinxID.MidUserLoginReq,
+            Idempotent = (DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10,
+            ToNodeAddr = NodeInfo.Instance.Sphinx.Addr,
+            Data = ByteString.CopyFrom(req.ToByteArray())
+        };
+
+        try
+        {
+            Cerberus.Instance.SendPackage(package);
+        }
+        catch (Exception ex)
+        {
+            errstr_ = ex.Message;
+        }
+    }
+
+    IEnumerator waitConnected()
+    {
+        while (!getNodeTask_.IsCompleted)
+        {
+            getNodeTask_.Wait(10);
+            yield return null;
+        }
+
+        getNodeTask_.Dispose();
+
+        if (errstr_.Length > 0)
+        {
+            Debug.LogError(string.Format("Err: {0}", errstr_));
+            yield break;
+        }
+
+        loginForm.SetActive(true);
+    }
+
+    void dispatchMessage(Package package)
+    {
+
+    }
+
+    void dispatchPackage()
+    {
+        do
+        {
+            if (errstr_.Length > 0)
+            {
+                Debug.LogError(errstr_);
+                break;
+            }
+
+            var pack = Cerberus.Instance.Update();
+            if (pack != null)
+            {
+                switch (pack.PID)
+                {
+                    // IO错误
+                    case -1:
+                        Debug.LogError(Encoding.UTF8.GetString(pack.Data.ToByteArray()));
+                        break;
+
+                    // 消息重复发送
+                    case (int)PackageID.Idempotent:
+                        Debug.LogWarning("");
+                        break;
+
+                    // 心跳
+                    case (int)CerberusID.PidPong:
+                        Debug.Log(string.Format("Pong: {0}", pack));
+                        break;
+
+                    // 节点消息
+                    case (int)CerberusID.PidNodeDelivery:
+                        Debug.Log(string.Format("Node: {0}", pack));
+                        dispatchMessage(pack);
+                        break;
+
+                    default:
+                        Debug.LogError(string.Format("unkown: {0}", pack));
+                        break;
+                }
+            }
+        } while (false);
+    }
+
+    public void btnGetVCodeClick()
+    {
+        System.Random random = new System.Random();
+        vcode.text = random.Next(99999).ToString();
+    }
+
+    public void btnLoginClick()
+    {
+        connectCerberus();
+    }
 
     void Awake()
     {
@@ -83,24 +190,9 @@ public class SampleScene : MonoBehaviour
         StartCoroutine(waitConnected());
     }
 
-    IEnumerator waitConnected()
-    {
-        while(!connectTask_.IsCompleted) {
-            connectTask_.Wait(10);
-            yield return null;
-        }
-
-        if (errstr_.Length > 0)
-        {
-            Debug.LogError(string.Format("Err: {0}", errstr_));
-            yield break;
-        }
-
-        loginForm.SetActive(true);
-    }
-
     void Update()
     {
         time.text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        dispatchPackage();
     }
 }
