@@ -2,14 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Alfred;
-using NKraken.cerberus;
 using NKraken.nw.client;
 using System;
 
-public enum NodeType
+using cerberus_ = NKraken.cerberus.Cerberus;
+
+public class NodeInfo
 {
-    Cerberus = 1,
-    Sphinx
+    public string Host { get; set; }
+
+    public string NodePath { get; set; }
+
+    public override string ToString()
+    {
+        return string.Format("[{0}] => {1}", Host, NodePath);
+    }
 }
 
 public class NodeMap
@@ -27,20 +34,8 @@ public class NodeMap
         }
     }
 
-    private Dictionary<NodeType, string> map_;
-
-    public string this[NodeType nodeType]
-    {
-        get
-        {
-            return map_[nodeType];
-        }
-
-        set
-        {
-            map_[nodeType] = value;
-        }
-    }
+    public NodeInfo Cerberus { get; set; }
+    public NodeInfo Sphinx { get; set; }
 
     public void SetNode(Node node)
     {
@@ -57,11 +52,22 @@ public class NodeMap
                 if (!int.TryParse(strarr[1], out port))
                     throw new Exception(string.Format("Addr is invalid: {0}", node.Addr));
 
-                Cerberus.Instance.Init(NW_PROTOCOL.TCP, strarr[0], port);
+                cerberus_.Instance.Init(NW_PROTOCOL.TCP, strarr[0], port);
+
+                Cerberus = new NodeInfo
+                {
+                    NodePath = node.NodePath,
+                    Host = node.Addr
+                };
+
                 break;
 
             case "sphinx":
-                map_[NodeType.Sphinx] = node.Addr;
+                Sphinx = new NodeInfo
+                {
+                    NodePath = node.NodePath,
+                    Host = node.Addr
+                };
                 break;
 
             default:

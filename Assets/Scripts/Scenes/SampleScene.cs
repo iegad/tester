@@ -4,6 +4,11 @@ using System;
 using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
+using Alfred;
+using Google.Protobuf;
+using NKraken.piper;
+using UnityEngine.UI;
+using System.Threading;
 
 public class SampleScene : MonoBehaviour
 {
@@ -11,25 +16,52 @@ public class SampleScene : MonoBehaviour
     public int Port;
     public NW_PROTOCOL protocol;
     public GameObject loginForm;
+    public Text time;
 
     private string errstr_ = "";
     private Task connectTask_;
 
     void getNodes()
     {
-        
-    }
-    
-
-    void Awake()
-    {
-        loginForm.SetActive(false);
-
-        connectTask_ = new Task(() => 
-        { 
+        connectTask_ = new Task(() =>
+        {
             try
             {
-                Cerberus.Instance.Init(protocol, Address, Port);
+                IClient client = ClientFactory.New(protocol);
+                client.Connect(Address, Port);
+
+                GetNodeReq req = new GetNodeReq();
+                req.Paths.Add("cerberus/user/tcp");
+                req.Paths.Add("sphinx");
+
+                Piper piper = new Piper
+                {
+                    Name = "GetNode",
+                    Data = ByteString.CopyFrom(req.ToByteArray())
+                };
+
+                client.Write(piper.ToByteArray());
+  
+                byte[] rbuf = client.Read();
+                if (rbuf == null)
+                {
+                    return;
+                }
+ 
+                GetNodeRsp rsp = GetNodeRsp.Parser.ParseFrom(rbuf);
+
+                if (rsp == null)
+                {
+                    return;
+                }
+
+                foreach (var node in rsp.Nodes)
+                {
+                    NodeMap.Instance.SetNode(node);
+                }
+
+                Debug.Log(NodeMap.Instance.Cerberus);
+                Thread.Sleep(5000);
             }
             catch (Exception ex)
             {
@@ -38,39 +70,16 @@ public class SampleScene : MonoBehaviour
         });
         connectTask_.Start();
     }
+    
 
-    //void GetNodes()
-    //{
-    //    Cerberus.Instance.
-
-    //    GetNodeReq req = new GetNodeReq();
-    //    req.Paths.Add("cerberus/user/tcp");
-    //    req.Paths.Add("sphinx");
-
-    //    Piper piper = new Piper
-    //    {
-    //        Name = "GetNode",
-    //        Data = ByteString.CopyFrom(req.ToByteArray())
-    //    };
-
-    //    int n = client.Write(piper.ToByteArray());
-    //    yield return null;
-
-    //    if (n <= 0)
-    //    {
-    //        Debug.LogError("��������ʧ��");
-    //        yield break;
-    //    }
-
-    //    byte[] rbuf = client.Read();
-    //    yield return null;
-    //    var rsp = GetNodeRsp.Parser.ParseFrom(rbuf);
-    //    yield return rsp;
-    //    Debug.Log(rsp.ToString());
-    //}
+    void Awake()
+    {
+        loginForm.SetActive(false);
+    }
 
     void Start()
     {
+        getNodes();
         StartCoroutine(waitConnected());
     }
 
@@ -83,7 +92,7 @@ public class SampleScene : MonoBehaviour
 
         if (errstr_.Length > 0)
         {
-            Debug.LogError(string.Format(": {0}", errstr_));
+            Debug.LogError(string.Format("Err: {0}", errstr_));
             yield break;
         }
 
@@ -92,6 +101,6 @@ public class SampleScene : MonoBehaviour
 
     void Update()
     {
-        
+        time.text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
     }
 }
