@@ -1,4 +1,4 @@
-using NKraken.cerberus;
+﻿using NKraken.cerberus;
 using NKraken.nw.client;
 using System;
 using System.Collections;
@@ -11,6 +11,7 @@ using UnityEngine.UI;
 using System.Threading;
 using pb;
 using System.Text;
+using UnityEngine.SceneManagement;
 
 public class SampleScene : MonoBehaviour
 {
@@ -119,9 +120,50 @@ public class SampleScene : MonoBehaviour
         loginForm.SetActive(true);
     }
 
+    IEnumerator loadLoginScene()
+    {
+        AsyncOperation ao = SceneManager.LoadSceneAsync(1, LoadSceneMode.Single);
+        ao.allowSceneActivation = false; // 设置该属性后, 场景加载完毕后, 不会马上加载, 而是需要通过代码来控制.
+        yield return null;
+
+        while (!ao.isDone)
+        {
+            float prograss = Mathf.Clamp01(ao.progress / 0.9f);
+            if (Mathf.Approximately(ao.progress, 0.9f))
+                ao.allowSceneActivation = true;
+            yield return null;
+        }
+    }
+
+    void userLoginRspHandle(UserLoginRsp rsp)
+    {
+        if (rsp == null)
+        {
+            Debug.LogError("UserLoginRsp is invalid");
+            return;
+        }
+            
+        if (rsp.Code != 0)
+        {
+            Debug.LogError(rsp.Error);
+            return;
+        }
+
+        StartCoroutine(loadLoginScene());
+    }
+
     void dispatchMessage(Package package)
     {
+        switch (package.MID)
+        {
+            case (int)SphinxID.MidUserLoginRsp:
+                userLoginRspHandle(UserLoginRsp.Parser.ParseFrom(package.Data));
+                break;
 
+            default:
+                Debug.LogError(string.Format("MessageID {0} is invalid", package.MID));
+                break;
+        }
     }
 
     void dispatchPackage()
@@ -139,22 +181,22 @@ public class SampleScene : MonoBehaviour
             {
                 switch (pack.PID)
                 {
-                    // IO����
+                    // IO错误
                     case -1:
                         Debug.LogError(Encoding.UTF8.GetString(pack.Data.ToByteArray()));
                         break;
 
-                    // ��Ϣ�ظ�����
+                    // 消息重复发送
                     case (int)PackageID.Idempotent:
                         Debug.LogWarning("");
                         break;
 
-                    // ����
+                    // 心跳
                     case (int)CerberusID.PidPong:
                         Debug.Log(string.Format("Pong: {0}", pack));
                         break;
 
-                    // �ڵ���Ϣ
+                    // 节点消息
                     case (int)CerberusID.PidNodeDelivery:
                         Debug.Log(string.Format("Node: {0}", pack));
                         dispatchMessage(pack);
