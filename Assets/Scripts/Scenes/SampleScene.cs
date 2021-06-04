@@ -34,38 +34,16 @@ public class SampleScene : MonoBehaviour
         {
             try
             {
-                IClient client = ClientFactory.New(protocol);
-                client.Connect(Address, Port);
+                Cerberus.Instance.Init(protocol, Address, Port, CerberusEx.EncodeHandler, CerberusEx.DecodeHandler);
 
                 GetNodeReq req = new GetNodeReq();
-                req.Paths.Add("cerberus/user/tcp");
                 req.Paths.Add("sphinx");
 
-                Piper piper = new Piper
+                Cerberus.Instance.SendPackage(new Package()
                 {
-                    Name = "GetNode",
+                    PID = (int)CerberusID.PidGetNodeReq,
                     Data = ByteString.CopyFrom(req.ToByteArray())
-                };
-
-                client.Write(piper.ToByteArray());
-
-                byte[] rbuf = client.Read();
-                if (rbuf == null)
-                    return;
-
-                client.Close();
-                GetNodeRsp rsp = GetNodeRsp.Parser.ParseFrom(rbuf);
-
-                if (rsp == null)
-                    return;
-
-                foreach (var node in rsp.Nodes)
-                    NodeInfo.Instance.SetNode(node);
-
-                Debug.Log(NodeInfo.Instance.Cerberus);
-                Debug.Log(NodeInfo.Instance.Sphinx);
-
-                Thread.Sleep(3000);
+                });
             }
             catch (Exception ex)
             {
@@ -77,37 +55,35 @@ public class SampleScene : MonoBehaviour
 
     void connectCerberus()
     {
-        UserLoginReq req = new UserLoginReq()
-        {
-            PhoneNum = phoneNum.text,
-            VCode = vcode.text
-        };
-        Package package = new Package()
-        {
-            PID = (int)CerberusID.PidUserDelivery,
-            MID = (int)SphinxID.MidUserLoginReq,
-            Idempotent = (DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10,
-            ToNodeAddr = NodeInfo.Instance.Sphinx.Addr,
-            Data = ByteString.CopyFrom(req.ToByteArray())
-        };
+        //UserLoginReq req = new UserLoginReq()
+        //{
+        //    PhoneNum = phoneNum.text,
+        //    VCode = vcode.text
+        //};
 
-        try
-        {
-            Cerberus.Instance.SendPackage(package);
-        }
-        catch (Exception ex)
-        {
-            errstr_ = ex.Message;
-        }
+        //Package package = new Package()
+        //{
+        //    PID = (int)CerberusID.PidUserDelivery,
+        //    MID = (int)SphinxID.MidUserLoginReq,
+        //    Idempotent = (DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10,
+        //    ToNodeAddr = NodeInfo.Instance.Sphinx.Addr,
+        //    Data = ByteString.CopyFrom(req.ToByteArray())
+        //};
+
+        //try
+        //{
+        //    Cerberus.Instance.SendPackage(package);
+        //}
+        //catch (Exception ex)
+        //{
+        //    errstr_ = ex.Message;
+        //}
     }
 
     IEnumerator waitConnected()
     {
         while (!getNodeTask_.IsCompleted)
-        {
-            getNodeTask_.Wait(10);
             yield return null;
-        }
 
         getNodeTask_.Dispose();
 

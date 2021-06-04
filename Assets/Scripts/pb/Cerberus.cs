@@ -29,13 +29,14 @@ namespace pb {
             "b2RlQXV0aFJzcBIMCgRDb2RlGAEgASgFEg0KBUVycm9yGAIgASgJIj8KC0tp",
             "Y2tVc2VyUmVxEhEKCVVzZXJBZGRycxgBIAMoCRIOCgZSZWFzb24YAiABKAkS",
             "DQoFRm9yY2UYAyABKAgiKgoLS2lja1VzZXJSc3ASDAoEQ29kZRgBIAEoBRIN",
-            "CgVFcnJvchgCIAEoCSqMAgoKQ2VyYmVydXNJRBIPCgtQSURfSW52YWxpZBAA",
+            "CgVFcnJvchgCIAEoCSq2AgoKQ2VyYmVydXNJRBIPCgtQSURfSW52YWxpZBAA",
             "EhMKD1BJRF9Vc2VySW52YWxpZBABEgwKCFBJRF9FY2hvEGQSFQoQUElEX1Vz",
-            "ZXJEZWxpdmVyeRDoBxINCghQSURfUGluZxDpBxINCghQSURfUG9uZxDqBxIR",
-            "CgxQSURfS2lja1VzZXIQ7QcSFQoQUElEX05vZGVEZWxpdmVyeRDQDxIUCg9Q",
-            "SURfTm9kZUF1dGhSZXEQ0Q8SFAoPUElEX05vZGVBdXRoUnNwENIPEhQKD1BJ",
-            "RF9LaWNrVXNlclJlcRDTDxIUCg9QSURfS2lja1VzZXJSc3AQ1A8SEwoOUElE",
-            "X1VzZXJDbG9zZWQQ1Q9CCloDL3BiqgICcGJiBnByb3RvMw=="));
+            "ZXJEZWxpdmVyeRDoBxINCghQSURfUGluZxDpBxINCghQSURfUG9uZxDqBxIT",
+            "Cg5QSURfR2V0Tm9kZVJlcRDrBxITCg5QSURfR2V0Tm9kZVJzcBDsBxIRCgxQ",
+            "SURfS2lja1VzZXIQ7QcSFQoQUElEX05vZGVEZWxpdmVyeRDQDxIUCg9QSURf",
+            "Tm9kZUF1dGhSZXEQ0Q8SFAoPUElEX05vZGVBdXRoUnNwENIPEhQKD1BJRF9L",
+            "aWNrVXNlclJlcRDTDxIUCg9QSURfS2lja1VzZXJSc3AQ1A8SEwoOUElEX1Vz",
+            "ZXJDbG9zZWQQ1Q9CCloDL3BiqgICcGJiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::pb.CerberusID), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -75,6 +76,14 @@ namespace pb {
     /// 心跳 pong
     /// </summary>
     [pbr::OriginalName("PID_Pong")] PidPong = 1002,
+    /// <summary>
+    /// 获取节点-请求
+    /// </summary>
+    [pbr::OriginalName("PID_GetNodeReq")] PidGetNodeReq = 1003,
+    /// <summary>
+    /// 获取节点-应答
+    /// </summary>
+    [pbr::OriginalName("PID_GetNodeRsp")] PidGetNodeRsp = 1004,
     /// <summary>
     /// --------------------- 网关 to 用户 ---------------------
     /// @踢除用户, 通知用户需要关闭连接, 连接由客户端主动关闭.
