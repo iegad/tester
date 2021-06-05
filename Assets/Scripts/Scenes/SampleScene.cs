@@ -15,9 +15,6 @@ using UnityEngine.UI;
 
 public class SampleScene : BasicScene
 {
-    public string Address;
-    public int Port;
-    public NW_PROTOCOL protocol;
     public GameObject loginForm;
     public Text time;
 
@@ -25,54 +22,11 @@ public class SampleScene : BasicScene
     public InputField phoneNum;
     public InputField vcode;
 
-    private Task initAsync_;
-
     #region 继承实现
-    protected override void BeginInit()
+
+    protected override IEnumerator EndInit(InitedHandler handler)
     {
-        initAsync_ = new Task(() =>
-        {
-            try
-            {
-                for (int i = 0; i < 3; i++)
-                {
-                    if (Cerberus.Instance.Init(protocol, Address, Port))
-                        break;
-                    Thread.Sleep(3000);
-                }
-                
-
-                GetNodeReq req = new GetNodeReq();
-                req.Paths.Add("sphinx");
-
-                Cerberus.Instance.SendPackage(new Package()
-                {
-                    PID = (int)CerberusID.PidGetNodeReq,
-                    Data = ByteString.CopyFrom(req.ToByteArray())
-                });
-            }
-            catch (Exception ex)
-            {
-                Error = ex.Message;
-            }
-        });
-        initAsync_.Start();
-    }
-
-    protected override IEnumerator EndInit()
-    {
-        while (!initAsync_.IsCompleted)
-            yield return null;
-
-        initAsync_.Dispose();
-
-        if (Error.Length > 0)
-        {
-            Debug.LogError(string.Format("Err: {0}", Error));
-            yield break;
-        }
-
-        loginForm.SetActive(true);
+        return base.EndInit(handler);
     }
 
     protected override void DispatchMessage(Package package)
@@ -98,7 +52,6 @@ public class SampleScene : BasicScene
 
         while (!ao.isDone)
         {
-            float prograss = Mathf.Clamp01(ao.progress / 0.9f);
             if (Mathf.Approximately(ao.progress, 0.9f))
                 ao.allowSceneActivation = true;
             yield return null;
@@ -138,24 +91,12 @@ public class SampleScene : BasicScene
     void Awake()
     {
         loginForm.SetActive(false);
-
-        OnError += (err) =>
-        {
-            Debug.LogError(err);
-        };
-
-        OnIOError += (err) =>
-        {
-            Debug.LogError(err);
-
-            Cerberus.Instance.Reconnect();
-        };
     }
 
     void Start()
     {
         BeginInit();
-        StartCoroutine(EndInit());
+        StartCoroutine(EndInit(() => { loginForm.SetActive(true); }));
     }
 
     void Update()
