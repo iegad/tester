@@ -56,13 +56,13 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\common\CerberusEx.cs" />
-    <Compile Include="Assets\Scripts\pb\Cerberus.cs" />
+    <Compile Include="Assets\Scripts\pb\Astroboy.cs" />
     <Compile Include="Assets\Scripts\pb\Sphinx.cs" />
     <Compile Include="Assets\Scripts\pb\Piper.cs" />
     <Compile Include="Assets\Scripts\pb\Alfred.cs" />
     <Compile Include="Assets\Scripts\Scenes\SampleScene.cs" />
-    <Compile Include="Assets\Scripts\pb\Astroboy.cs" />
+    <Compile Include="Assets\Scripts\Scenes\BasicScene.cs" />
+    <Compile Include="Assets\Scripts\comm\CerberusEx.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

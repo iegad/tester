@@ -1,19 +1,19 @@
-﻿using NKraken.cerberus;
+﻿using Alfred;
+using Assets.Scripts.Scenes;
+using Google.Protobuf;
+using NKraken;
 using NKraken.nw.client;
+using pb;
 using System;
 using System.Collections;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
-using Alfred;
-using Google.Protobuf;
-using NKraken.piper;
-using UnityEngine.UI;
-using System.Threading;
-using pb;
-using System.Text;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-public class SampleScene : MonoBehaviour
+public class SampleScene : BasicScene
 {
     public string Address;
     public int Port;
@@ -25,16 +25,22 @@ public class SampleScene : MonoBehaviour
     public InputField phoneNum;
     public InputField vcode;
 
-    private string errstr_ = "";
-    private Task getNodeTask_;
+    private Task initAsync_;
 
-    void getNodes()
+    #region 继承实现
+    protected override void BeginInit()
     {
-        getNodeTask_ = new Task(() =>
+        initAsync_ = new Task(() =>
         {
             try
             {
-                Cerberus.Instance.Init(protocol, Address, Port, CerberusEx.EncodeHandler, CerberusEx.DecodeHandler);
+                for (int i = 0; i < 3; i++)
+                {
+                    if (Cerberus.Instance.Init(protocol, Address, Port))
+                        break;
+                    Thread.Sleep(3000);
+                }
+                
 
                 GetNodeReq req = new GetNodeReq();
                 req.Paths.Add("sphinx");
@@ -47,54 +53,42 @@ public class SampleScene : MonoBehaviour
             }
             catch (Exception ex)
             {
-                errstr_ = ex.Message;
+                Error = ex.Message;
             }
         });
-        getNodeTask_.Start();
+        initAsync_.Start();
     }
 
-    void connectCerberus()
+    protected override IEnumerator EndInit()
     {
-        //UserLoginReq req = new UserLoginReq()
-        //{
-        //    PhoneNum = phoneNum.text,
-        //    VCode = vcode.text
-        //};
-
-        //Package package = new Package()
-        //{
-        //    PID = (int)CerberusID.PidUserDelivery,
-        //    MID = (int)SphinxID.MidUserLoginReq,
-        //    Idempotent = (DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10,
-        //    ToNodeAddr = NodeInfo.Instance.Sphinx.Addr,
-        //    Data = ByteString.CopyFrom(req.ToByteArray())
-        //};
-
-        //try
-        //{
-        //    Cerberus.Instance.SendPackage(package);
-        //}
-        //catch (Exception ex)
-        //{
-        //    errstr_ = ex.Message;
-        //}
-    }
-
-    IEnumerator waitConnected()
-    {
-        while (!getNodeTask_.IsCompleted)
+        while (!initAsync_.IsCompleted)
             yield return null;
 
-        getNodeTask_.Dispose();
+        initAsync_.Dispose();
 
-        if (errstr_.Length > 0)
+        if (Error.Length > 0)
         {
-            Debug.LogError(string.Format("Err: {0}", errstr_));
+            Debug.LogError(string.Format("Err: {0}", Error));
             yield break;
         }
 
         loginForm.SetActive(true);
     }
+
+    protected override void DispatchMessage(Package package)
+    {
+        switch (package.MID)
+        {
+            case (int)SphinxID.MidUserLoginRsp:
+                userLoginRspHandle(UserLoginRsp.Parser.ParseFrom(package.Data));
+                break;
+
+            default:
+                Debug.LogError(string.Format("MessageID {0} is invalid", package.MID));
+                break;
+        }
+    }
+    #endregion
 
     IEnumerator loadLoginScene()
     {
@@ -128,63 +122,7 @@ public class SampleScene : MonoBehaviour
         StartCoroutine(loadLoginScene());
     }
 
-    void dispatchMessage(Package package)
-    {
-        switch (package.MID)
-        {
-            case (int)SphinxID.MidUserLoginRsp:
-                userLoginRspHandle(UserLoginRsp.Parser.ParseFrom(package.Data));
-                break;
-
-            default:
-                Debug.LogError(string.Format("MessageID {0} is invalid", package.MID));
-                break;
-        }
-    }
-
-    void dispatchPackage()
-    {
-        do
-        {
-            if (errstr_.Length > 0)
-            {
-                Debug.LogError(errstr_);
-                break;
-            }
-
-            var pack = Cerberus.Instance.Update();
-            if (pack != null)
-            {
-                switch (pack.PID)
-                {
-                    // IO错误
-                    case -1:
-                        Debug.LogError(Encoding.UTF8.GetString(pack.Data.ToByteArray()));
-                        break;
-
-                    // 消息重复发送
-                    case (int)PackageID.Idempotent:
-                        Debug.LogWarning("");
-                        break;
-
-                    // 心跳
-                    case (int)CerberusID.PidPong:
-                        Debug.Log(string.Format("Pong: {0}", pack));
-                        break;
-
-                    // 节点消息
-                    case (int)CerberusID.PidNodeDelivery:
-                        Debug.Log(string.Format("Node: {0}", pack));
-                        dispatchMessage(pack);
-                        break;
-
-                    default:
-                        Debug.LogError(string.Format("unkown: {0}", pack));
-                        break;
-                }
-            }
-        } while (false);
-    }
+    
 
     public void btnGetVCodeClick()
     {
@@ -194,23 +132,35 @@ public class SampleScene : MonoBehaviour
 
     public void btnLoginClick()
     {
-        connectCerberus();
+        // 发送登录请求
     }
 
     void Awake()
     {
         loginForm.SetActive(false);
+
+        OnError += (err) =>
+        {
+            Debug.LogError(err);
+        };
+
+        OnIOError += (err) =>
+        {
+            Debug.LogError(err);
+
+            Cerberus.Instance.Reconnect();
+        };
     }
 
     void Start()
     {
-        getNodes();
-        StartCoroutine(waitConnected());
+        BeginInit();
+        StartCoroutine(EndInit());
     }
 
     void Update()
     {
-        time.text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-        dispatchPackage();
+        time.text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.FFF");
+        DispatchPackage();
     }
 }
