@@ -37,8 +37,6 @@ namespace Assets.Scripts.Scenes
 
         protected virtual void BeginInit()
         {
-
-
             initAsync_ = new Task(() =>
             {
                 if (Cerberus.Instance.Connected)
