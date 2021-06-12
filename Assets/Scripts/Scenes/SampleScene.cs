@@ -1,14 +1,7 @@
-﻿using Alfred;
-using Assets.Scripts.Scenes;
-using Google.Protobuf;
-using NKraken;
-using NKraken.nw.client;
+﻿using Assets.Scripts.Scenes;
 using pb;
 using System;
 using System.Collections;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -33,7 +26,7 @@ public class SampleScene : BasicScene
     {
         switch (package.MID)
         {
-            case (int)SphinxID.MidUserLoginRsp:
+            case MessageID.MidUserLoginRsp:
                 userLoginRspHandle(UserLoginRsp.Parser.ParseFrom(package.Data));
                 break;
 

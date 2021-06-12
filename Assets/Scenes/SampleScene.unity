@@ -853,9 +853,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00e3d55122cbb8d468f4b1a518027b36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Address: 127.0.0.1
+  RECONNECTED_COUNT: 3
+  RECONNECTED_INTVAL: 1000
+  Protocol: 1
+  Host: 127.0.0.1
   Port: 1751
-  protocol: 1
   loginForm: {fileID: 414747374}
   time: {fileID: 799981567}
   phoneNum: {fileID: 2086193607}

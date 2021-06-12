@@ -1,4 +1,3 @@
-using Alfred;
 using Google.Protobuf;
 using NKraken;
 using NKraken.nw.client;
@@ -15,8 +14,8 @@ namespace Assets.Scripts.Scenes
 
     public class BasicScene : MonoBehaviour
     {
-        public int RECONNECTED_COUNT = Cerberus.RECONNECT_COUNT;
-        public int RECONNECTED_INTVAL = Cerberus.RECONNECT_INTVAL;
+        public int RECONNECTED_COUNT;
+        public int RECONNECTED_INTVAL;
 
         public NW_PROTOCOL Protocol;
         public string Host;
@@ -52,12 +51,12 @@ namespace Assets.Scripts.Scenes
                     }
 
 
-                    GetNodeReq req = new GetNodeReq();
+                    GetNodesReq req = new GetNodesReq();
                     req.Paths.Add("sphinx");
 
                     Cerberus.Instance.SendPackage(new Package()
                     {
-                        PID = (int)CerberusID.PidGetNodeReq,
+                        PID = PackageID.PidGetNodesReq,
                         Data = ByteString.CopyFrom(req.ToByteArray())
                     });
                 }
@@ -75,15 +74,15 @@ namespace Assets.Scripts.Scenes
             {
                 while (!initAsync_.IsCompleted)
                     yield return null;
-
                 initAsync_.Dispose();
 
                 if (Error.Length > 0)
                 {
                     Debug.LogError(string.Format("Err: {0}", Error));
-                    handler?.Invoke();
                     yield break;
                 }
+
+                handler?.Invoke();
             }
         }
 
@@ -108,22 +107,35 @@ namespace Assets.Scripts.Scenes
                     switch (pack.PID)
                     {
                         // IO错误
-                        case -1: OnIOError(pack.Data.ToStringUtf8()); break;
+                        case PackageID.PidIowrite:
+                        case PackageID.PidIoread:
+                            OnIOError(pack.Data.ToStringUtf8()); 
+                            break;
 
                         // 消息重复发送
-                        case (int)PackageID.Idempotent: OnPackageRepeated(pack); break;
+                        case PackageID.PidIdempotent:
+                            OnPackageRepeated(pack); 
+                            break;
 
                         // 心跳
-                        case (int)CerberusID.PidPong: OnPong(pack); break;
+                        case PackageID.PidPong: 
+                            OnPong(pack);
+                            break;
 
                         // 节点消息
-                        case (int)CerberusID.PidNodeDelivery: DispatchMessage(pack); break;
+                        case PackageID.PidNodeDelivery:
+                            DispatchMessage(pack); 
+                            break;
 
                         // 被踢事件
-                        case (int)CerberusID.PidKickUser: OnKickUser(pack); break;
+                        case PackageID.PidKickUser: 
+                            OnKickUser(pack);
+                            break;
 
                         // 未知PID
-                        default: OnPIDUnkown(pack); break;
+                        default: 
+                            OnPIDUnkown(pack);
+                            break;
                     }
                 }
             } while (false);
