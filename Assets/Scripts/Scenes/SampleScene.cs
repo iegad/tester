@@ -94,7 +94,11 @@ public class SampleScene : BasicScene
     void Start()
     {
         BeginInit();
-        StartCoroutine(EndInit(() => { loginForm.SetActive(true); }));
+        StartCoroutine(EndInit(() => 
+        { 
+            if (Hydra.Sphinx != null)
+                loginForm.SetActive(true); 
+        }));
     }
 
     void Update()

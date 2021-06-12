@@ -59,6 +59,7 @@
     <Compile Include="Assets\Scripts\Scenes\BasicScene.cs" />
     <Compile Include="Assets\Scripts\comm\Hydra.cs" />
     <Compile Include="Assets\Scripts\Scenes\SampleScene.cs" />
+    <Compile Include="Assets\Scripts\Scenes\MainScene.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
