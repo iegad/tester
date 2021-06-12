@@ -57,7 +57,7 @@ namespace Assets.Scripts.Scenes
                     Cerberus.Instance.SendPackage(new Package()
                     {
                         PID = PackageID.PidGetNodesReq,
-                        Data = ByteString.CopyFrom(req.ToByteArray())
+                        Data = req.ToByteString()
                     });
                 }
                 catch (Exception ex)
@@ -132,6 +132,10 @@ namespace Assets.Scripts.Scenes
                             OnKickUser(pack);
                             break;
 
+                        case PackageID.PidGetNodesRsp:
+                            OnGetNodesRsp(pack);
+                            break;
+
                         // 未知PID
                         default: 
                             OnPIDUnkown(pack);
@@ -141,6 +145,19 @@ namespace Assets.Scripts.Scenes
             } while (false);
         }
 
+        // 发包
+        protected void SendPackage(int seq, PackageID pid, MessageID mid, ByteString data, Node node)
+        {
+            Package pack = new Package
+            {
+                Seq = seq,
+                PID = pid,
+                MID = mid,
+                Data = data,
+                ToNodeAddr = node.Addr
+            };
+            Cerberus.Instance.SendPackage(pack);
+        }
 
         // 错误事件
         protected virtual void OnError(string err)
@@ -177,6 +194,21 @@ namespace Assets.Scripts.Scenes
         protected virtual void OnKickUser(Package package)
         {
             // TODO:....
+        }
+
+        protected virtual void OnGetNodesRsp(Package package)
+        {
+            GetNodesRsp rsp = GetNodesRsp.Parser.ParseFrom(package.Data);
+            if (rsp.Code != 0)
+            {
+                Debug.LogError(rsp.Error);
+                return;
+            }
+
+            foreach (var node in rsp.Nodes)
+            {
+                Hydra.SetNode(node);
+            }
         }
 
         // 未知消息事件

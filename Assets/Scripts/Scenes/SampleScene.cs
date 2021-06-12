@@ -5,6 +5,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Google.Protobuf;
 
 public class SampleScene : BasicScene
 {
@@ -68,8 +69,6 @@ public class SampleScene : BasicScene
         StartCoroutine(loadLoginScene());
     }
 
-    
-
     public void btnGetVCodeClick()
     {
         System.Random random = new System.Random();
@@ -78,7 +77,13 @@ public class SampleScene : BasicScene
 
     public void btnLoginClick()
     {
-        // 发送登录请求
+        UserLoginReq req = new UserLoginReq
+        {
+            Email = phoneNum.text,
+            VCode = vcode.text
+        };
+
+        SendPackage(1, PackageID.PidUserDelivery, MessageID.MidUserLoginReq, req.ToByteString(), Hydra.Sphinx);
     }
 
     void Awake()
