@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Scenes;
+using Assets.Scripts.Scenes;
 using pb;
 using System;
 using System.Collections;
@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Google.Protobuf;
 
-public class SampleScene : BasicScene
+public class SampleScene : BaseScene
 {
     public GameObject loginForm;
     public Text time;
@@ -17,12 +17,6 @@ public class SampleScene : BasicScene
     public InputField vcode;
 
     #region 继承实现
-
-    protected override IEnumerator EndInit(InitedHandler handler)
-    {
-        return base.EndInit(handler);
-    }
-
     protected override void DispatchMessage(Package package)
     {
         switch (package.MID)
@@ -38,19 +32,7 @@ public class SampleScene : BasicScene
     }
     #endregion
 
-    IEnumerator loadLoginScene()
-    {
-        AsyncOperation ao = SceneManager.LoadSceneAsync(1, LoadSceneMode.Single);
-        ao.allowSceneActivation = false; // 设置该属性后, 场景加载完毕后, 不会马上加载, 而是需要通过代码来控制.
-        yield return null;
 
-        while (!ao.isDone)
-        {
-            if (Mathf.Approximately(ao.progress, 0.9f))
-                ao.allowSceneActivation = true;
-            yield return null;
-        }
-    }
 
     void userLoginRspHandle(UserLoginRsp rsp)
     {
@@ -66,7 +48,7 @@ public class SampleScene : BasicScene
             return;
         }
 
-        StartCoroutine(loadLoginScene());
+        LoadScene(1);
     }
 
     public void btnGetVCodeClick()
@@ -77,13 +59,9 @@ public class SampleScene : BasicScene
 
     public void btnLoginClick()
     {
-        UserLoginReq req = new UserLoginReq
-        {
-            Email = phoneNum.text,
-            VCode = vcode.text
-        };
-
-        SendPackage(1, PackageID.PidUserDelivery, MessageID.MidUserLoginReq, req.ToByteString(), Hydra.Sphinx);
+        int res = UserLogin(phoneNum.text, vcode.text);
+        if (res < 0)
+            Debug.LogError(res);
     }
 
     void Awake()
@@ -93,12 +71,11 @@ public class SampleScene : BasicScene
 
     void Start()
     {
-        BeginInit();
-        StartCoroutine(EndInit(() => 
-        { 
+        BeginInitConnection(() =>
+        {
             if (Hydra.Sphinx != null)
-                loginForm.SetActive(true); 
-        }));
+                loginForm.SetActive(true);
+        });
     }
 
     void Update()
