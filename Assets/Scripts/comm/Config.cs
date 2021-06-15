@@ -1,5 +1,6 @@
 using NKraken;
 using NKraken.security;
+using pb;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Assets.Scripts.comm
         /// </summary>
         private const ulong _VERSION = 0x0000000000000001;
 
-        private static readonly string _TERMINATOR_INFO = Encoding.UTF8.GetString(MD5.Format(Encoding.UTF8.GetBytes(SystemInfo.deviceUniqueIdentifier)));
+        private static readonly byte[] _TERMINATOR_INFO = MD5.Format(Encoding.UTF8.GetBytes(SystemInfo.deviceUniqueIdentifier));
 
         public const int OS_TYPE = 0;
 
@@ -28,13 +29,15 @@ namespace Assets.Scripts.comm
             }
         }
 
-        public static string TerminatorInfo
+        public static byte[] TerminatorInfo
         {
             get
             {
                 return _TERMINATOR_INFO;
             }
         }
+
+        public static UserLoginInfo UserLoginInfo { get; set; }
     }
 }
 

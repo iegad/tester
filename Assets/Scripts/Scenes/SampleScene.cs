@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Google.Protobuf;
+using Assets.Scripts.comm;
 
 public class SampleScene : BaseScene
 {
@@ -17,38 +18,26 @@ public class SampleScene : BaseScene
     public InputField vcode;
 
     #region 继承实现
-    protected override void DispatchMessage(Package package)
-    {
-        switch (package.MID)
-        {
-            case MessageID.MidUserLoginRsp:
-                userLoginRspHandle(UserLoginRsp.Parser.ParseFrom(package.Data));
-                break;
-
-            default:
-                Debug.LogError(string.Format("MessageID {0} is invalid", package.MID));
-                break;
-        }
-    }
     #endregion
 
-
-
-    void userLoginRspHandle(UserLoginRsp rsp)
+    protected override int UserLoginHandle(UserLoginRsp rsp)
     {
         if (rsp == null)
         {
             Debug.LogError("UserLoginRsp is invalid");
-            return;
+            return -1;
         }
-            
+
         if (rsp.Code != 0)
         {
             Debug.LogError(rsp.Error);
-            return;
+            return -2;
         }
 
+        Config.UserLoginInfo = rsp.UserLoginInfo;
+        PlayerPrefs.SetString("userInfo", Config.UserLoginInfo.ToString());
         LoadScene(1);
+        return 0;
     }
 
     public void btnGetVCodeClick()
@@ -67,11 +56,13 @@ public class SampleScene : BaseScene
     void Awake()
     {
         loginForm.SetActive(false);
+        string ustr = PlayerPrefs.GetString("userInfo");
+        Debug.Log(ustr);
     }
 
     void Start()
     {
-        BeginInitConnection(() =>
+        BeginConnection(() =>
         {
             if (Hydra.Sphinx != null)
                 loginForm.SetActive(true);
