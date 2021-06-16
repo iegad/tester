@@ -8,6 +8,47 @@ namespace Assets.Scripts.Scenes
 {
     public partial class BaseScene : MonoBehaviour
     {
+        protected int UserLogin(long userID, string phoneNum, string email, ByteString token, ByteString deviceCode)
+        {
+            if (Hydra.Sphinx == null)
+                return -100;
+
+            if (userID <= 0)
+                return -1;
+
+            if (phoneNum == null && email == null)
+                return -2;
+
+            if (token == null || token.Length != 16)
+                return -3;
+
+            if (deviceCode == null || deviceCode.Length != 16)
+                return -4;
+
+            UserLoginReq req = new UserLoginReq
+            {
+                ClientVer = (long)Config.ClientVersion,
+                OSType = Config.OS_TYPE,
+                DeviceCode = deviceCode,
+                Token = token,
+                UserID = userID,
+                PhoneNum = phoneNum,
+                Email = email
+            };
+
+            try
+            {
+                SendPackage(PackageID.PidUserDelivery, MessageID.MidUserLoginReq, req.ToByteString(), Hydra.Sphinx);
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Error = ex.Message;
+            }
+
+            return -1000;
+        }
+
         protected int UserLogin(string account, string vcode)
         {
             if (Hydra.Sphinx == null)
@@ -24,7 +65,7 @@ namespace Assets.Scripts.Scenes
                 VCode = vcode,
                 ClientVer = (long)Config.ClientVersion,
                 OSType = Config.OS_TYPE,
-                TermInfo = ByteString.CopyFrom(Config.TerminatorInfo)
+                DeviceCode = ByteString.CopyFrom(Config.DeviceCode)
             };
 
             if (ulong.TryParse(account, out _))

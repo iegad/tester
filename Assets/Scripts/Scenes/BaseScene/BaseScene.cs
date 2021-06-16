@@ -125,7 +125,7 @@ namespace Assets.Scripts.Scenes
             _ = StartCoroutine(loadLoginScene(sceneIndex));
         }
 
-        IEnumerator loadLoginScene(int sceneIndex)
+        protected IEnumerator loadLoginScene(int sceneIndex)
         {
             AsyncOperation ao = SceneManager.LoadSceneAsync(sceneIndex, LoadSceneMode.Single);
             ao.allowSceneActivation = false; // 设置该属性后, 场景加载完毕后, 不会马上加载, 而是需要通过代码来控制.

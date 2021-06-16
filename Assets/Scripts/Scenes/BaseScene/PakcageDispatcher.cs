@@ -28,7 +28,7 @@ namespace Assets.Scripts.Scenes
                     break;
 
                 Package outPackage = MessageManager.Instance.Get(inPackage.Seq);
-                if (outPackage == null)
+                if (outPackage == null && inPackage.PID != PackageID.PidPong)
                 {
                     Debug.LogWarning(string.Format("未匹配到出包: {0}", inPackage.ToString()));
                     break;

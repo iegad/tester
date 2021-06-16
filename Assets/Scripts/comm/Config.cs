@@ -17,7 +17,7 @@ namespace Assets.Scripts.comm
         /// </summary>
         private const ulong _VERSION = 0x0000000000000001;
 
-        private static readonly byte[] _TERMINATOR_INFO = MD5.Format(Encoding.UTF8.GetBytes(SystemInfo.deviceUniqueIdentifier));
+        private static readonly byte[] _DEVICE_CODE = MD5.Format(Encoding.UTF8.GetBytes(SystemInfo.deviceUniqueIdentifier));
 
         public const int OS_TYPE = 0;
 
@@ -29,15 +29,15 @@ namespace Assets.Scripts.comm
             }
         }
 
-        public static byte[] TerminatorInfo
+        public static byte[] DeviceCode
         {
             get
             {
-                return _TERMINATOR_INFO;
+                return _DEVICE_CODE;
             }
         }
 
-        public static UserLoginInfo UserLoginInfo { get; set; }
+        public static UserSession UserSession { get; set; }
     }
 }
 

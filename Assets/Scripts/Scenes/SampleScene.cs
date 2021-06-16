@@ -30,12 +30,14 @@ public class SampleScene : BaseScene
 
         if (rsp.Code != 0)
         {
-            Debug.LogError(rsp.Error);
+            Debug.LogError(rsp);
+            if (!loginForm.activeInHierarchy)
+                loginForm.SetActive(true);
             return -2;
         }
 
-        Config.UserLoginInfo = rsp.UserLoginInfo;
-        PlayerPrefs.SetString("userInfo", Config.UserLoginInfo.ToString());
+        Config.UserSession = rsp.UserSession;
+        PlayerPrefs.SetString("userSession", Config.UserSession.ToString());
         LoadScene(1);
         return 0;
     }
@@ -56,8 +58,6 @@ public class SampleScene : BaseScene
     void Awake()
     {
         loginForm.SetActive(false);
-        string ustr = PlayerPrefs.GetString("userInfo");
-        Debug.Log(ustr);
     }
 
     void Start()
@@ -65,7 +65,25 @@ public class SampleScene : BaseScene
         BeginConnection(() =>
         {
             if (Hydra.Sphinx != null)
+            {
+                do
+                {
+                    string ustr = PlayerPrefs.GetString("userSession");
+
+                    if (ustr == null || ustr.Length == 0)
+                        break;
+
+                    UserSession ss = UserSession.Parser.ParseJson(ustr);
+                    if (ss == null)
+                        break;
+
+                    int n = UserLogin(ss.UserInfo.UserID, ss.UserInfo.PhoneNum, ss.UserInfo.Email, ss.Token, ss.DeviceCode);
+                    if (n == 0)
+                        return;
+                } while (false);
+
                 loginForm.SetActive(true);
+            }
         });
     }
 
