@@ -1,8 +1,8 @@
 ﻿<Properties StartupConfiguration="{69752891-D9C1-6A5A-4CAA-D73056D92F21}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Scenes/BasicScene.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Scenes/SampleScene.cs">
     <Files>
-      <File FileName="Assets/Scripts/Scenes/BasicScene.cs" Line="124" Column="39" />
-      <File FileName="Assets/Scripts/Scenes/SampleScene.cs" Line="29" Column="9" />
+      <File FileName="Assets/Scripts/Scenes/BasicScene.cs" Line="169" Column="25" />
+      <File FileName="Assets/Scripts/Scenes/SampleScene.cs" Line="24" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -11,7 +11,7 @@
             <Node name="Assets" expanded="True">
               <Node name="Scripts" expanded="True">
                 <Node name="Scenes" expanded="True">
-                  <Node name="BasicScene.cs" selected="True" />
+                  <Node name="SampleScene.cs" selected="True" />
                 </Node>
               </Node>
             </Node>
